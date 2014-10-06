@@ -1,0 +1,10 @@
+image(name)
+  background-image:url(name)
+  width:image-size(name)[0]
+  height:image-size(name)[1]
+
+image-retina(name)
+  background-image:url(name)
+  width:image-size(name)[0] * 0.5
+  height:image-size(name)[1] * 0.5
+  background-size: @width

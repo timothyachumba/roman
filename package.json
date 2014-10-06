@@ -1,0 +1,14 @@
+{
+  "author": "Timothy Achumba",
+  "name": "RomanPulermuller",
+  "version": "1.0.0",
+  "engines": {
+    "node": "~0.6.5"
+  },
+
+  "dependencies": {
+    "stylus": "latest",
+    "nib": "latest"
+  }
+}
+
