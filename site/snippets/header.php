@@ -35,8 +35,4 @@
 
 </head>
 
-<body class="<?=$site->uri()->path()->first();?>">
-
-  <header>
-    <h1><?= $site->title() ?></h1>
-  </header>
+<body class="<?=$site->page()->uri(); ?>">

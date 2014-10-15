@@ -20,7 +20,6 @@ define([
       'click .panel .close': 'closePanel',
     },
 
-
     'previewProject': function(ev) {
 
       var self = this;
@@ -71,6 +70,6 @@ define([
       var self = this;
 
       self.togglePanel();
-    }
+    },
   });
 });
