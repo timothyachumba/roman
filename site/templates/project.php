@@ -9,3 +9,4 @@
   <a class="close"></a>
   <?= kirbytext($page->info()) ?>
 </div>
+<a href="/" class="bigclose"></a>
