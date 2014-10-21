@@ -1,0 +1,66 @@
+@media $media-tablet-portrait
+  body
+    .container
+      .index
+        .grid-container
+          .grid
+            width 700px
+
+@media $media-full-width
+  body
+    .container
+      .index
+        .grid-container
+          padding 100px 20px
+          box-sizing border-box
+
+          .grid
+            width 100%
+            column-count 2
+
+      .panel
+        z-index: 40
+        width 100%
+        padding 30px 30px 30px 30px
+        background rgba(white ,0.99)
+
+        &.active
+          transform translateX(0)
+
+          .panel-link
+            transform translateX(0)
+
+        .panel-link
+          font-size 22px
+          line-height 26px
+          transform translateX(-110px)
+          margin-bottom 30px
+
+@media $media-mobile-portrait
+  body
+    .container
+      header
+        padding 30px 30px
+
+        h1
+          width 200px
+          font-size 22px
+          line-height 26px
+
+          a
+            &:hover
+              border-bottom 2px $dark solid
+
+      nav.menu
+        font-size 22px
+        line-height 26px
+        left 30px
+
+        ol
+          padding: 90px 0 0px
+
+      .index
+        .grid-container
+          .grid
+            width 100%
+            column-count 1

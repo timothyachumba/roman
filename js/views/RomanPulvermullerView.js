@@ -18,6 +18,8 @@ define([
       'mouseleave .menu ol li div a': 'hidePreview',
       'click .panel-link': 'showPanel',
       'click .panel .close': 'closePanel',
+      'click .index-link': 'showIndex',
+      'click .index-close': 'closeIndex'
     },
 
     'previewProject': function(ev) {
@@ -70,6 +72,26 @@ define([
       var self = this;
 
       self.togglePanel();
+    },
+
+    'showIndex': function() {
+
+      var self = this;
+      var $index = $('.index');
+
+      $index.addClass('active');
+    },
+
+    'closeIndex': function() {
+
+      var self = this;
+      var $index = $('.index');
+
+      $index.fadeOut(500);
+
+      setTimeout(function() {
+        $index.removeClass('active');
+      }, 500);
     },
   });
 });

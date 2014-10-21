@@ -10,6 +10,5 @@
       </div>
     <?php endforeach ?>
   </div>
-
   <?php snippet('panel', array('title' => 'About')) ?>
 </div>
