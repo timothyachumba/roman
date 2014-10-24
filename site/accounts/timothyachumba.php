@@ -6,6 +6,6 @@ password: >
   $2a$10$sKm29pE9d4kAxYuH.rlfP.TI2IrbXunCeZoHnmpxSJiLhWo2GNabS
 language: en
 role: admin
-token: 0a7ec2f79f6c775e0dbbbf1cee2ada1c13b2cb78
+token: b862a28357b65d537a1a5abd27488f5ab4a3a6c9
 history:
   - projects
