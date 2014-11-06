@@ -22,6 +22,9 @@
     <a href="#" class="bigclose index-close"></a>
   </header>
   <div class="slider">
+    <div class="slide">
+      <img src="http://roman.localhost/content/projects/01-switzerland/56.jpg" data-adaptive-background='1'>
+    </div>
   </div>
   <?php snippet('panel', array('title' => 'Info')) ?>
   <a href="/" class="bigclose"></a>

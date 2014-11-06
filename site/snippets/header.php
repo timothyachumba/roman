@@ -8,26 +8,20 @@
   <meta name="keywords" content="<?php echo html($site->keywords()) ?>" />
   <meta name="robots" content="index, follow" />
 
-  <?php echo css('css/styles.css') ?>
+  <?php echo css(array(
+    'css/plugins/scalablelightbox.css',
+    'css/styles.css'
+  )) ?>
 
   <!-- Scripts -->
-  <?
-    $isProduction = (strpos($site->url(), 'romanpullvermuller.com') > 0);
-    if ($isProduction) {
-      $mainJS = 'main.build';
-    }
-    else {
-      $mainJS = 'main';
-    }
-  ?>
-  <script type="text/javascript" src="/js/vendor/require.js"></script>
-  <script type="text/javascript">
-    window.require = requirejs.config({
-      'baseUrl': '/js',
-      'context': 'rp'
-    });
-  </script>
-  <script type="text/javascript" src="/js/<?= $mainJS ?>.js?v=<?= time(); ?>"></script>
+
+  <?php echo js(array(
+    'js/libs/jquery.js',
+    'js/libs/modernizr.js',
+    'js/libs/hammer.js',
+    'js/plugins/scalablelightbox.js',
+    'js/main.js',
+  )) ?>
 
   <? if($page->hasImages()): ?>
     <link rel="image_src" href="<?= $page->images()->first()->url(); ?>">

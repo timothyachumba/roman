@@ -12,3 +12,4 @@
   </div>
   <?php snippet('panel', array('title' => 'About')) ?>
 </div>
+<?php snippet('scalablelightbox') ?>

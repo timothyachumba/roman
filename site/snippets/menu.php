@@ -5,7 +5,7 @@
       <?php $count++; ?>
       <li>
         <div>
-          <a href="<?= $project->url() ?>" class="<?= $project->uid() ?> project-link">
+          <a class="<?= $project->uid() ?> project-link">
             <span class="number"><?= $count ?></span>
             <span class="name"><?= $project->title() ?></span>
           </a>

@@ -4,6 +4,9 @@ define([
   'vendor/underscore',
   'vendor/backbone',
 
+  'plugins/hammer',
+  'plugins/scalablelightbox',
+
   'helpers/helpers'
 
 ], function($, _, Backbone, helpers) {
@@ -21,6 +24,21 @@ define([
       'click .index-link': 'showIndex',
       'click .index-close': 'closeIndex'
     },
+
+    'initialize': function() {
+
+      var self = this;
+
+      // self.adaptiveBackground();
+    },
+
+    // 'adaptiveBackground': function() {
+
+    //   $(document).ready(function(){
+    //     $.adaptiveBackground.run()
+    //   });
+
+    // },
 
     'previewProject': function(ev) {
 
