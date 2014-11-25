@@ -194,7 +194,7 @@
 
 .sl-lightbox-decks-container {
   position: absolute;
-  top: 53%;
+  top: 50%;
   left: 50%;
   z-index: 1100;
   cursor: none;

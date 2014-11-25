@@ -1,9 +1,12 @@
+<?php echo js('js/libs/jquery.js') ?>
+<?php echo js('js/plugins/scalablelightbox.js') ?>
+
 <script type="text/javascript">
 $(function() {
 
   $.ScalableLightbox({
     debug:       true,
-    hash:        false,
+    hash:        true,
     baseImgPath: "content/projects/",
     data: [
       <?php $count = 0; ?>
@@ -37,3 +40,5 @@ $(".menu ol li div a.<?= $page->uid() ?>").click(function(e) {
 });
 <?php endforeach ?>
 </script>
+
+<?php echo js('js/main.js') ?>

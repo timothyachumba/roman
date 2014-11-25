@@ -1,5 +1,7 @@
 <?php snippet('header') ?>
+
 <div class="container">
+
   <header>
     <h1><?= $site->title() ?></h1>
   </header>
@@ -12,4 +14,5 @@
   </div>
   <?php snippet('panel', array('title' => 'About')) ?>
 </div>
+
 <?php snippet('scalablelightbox') ?>
