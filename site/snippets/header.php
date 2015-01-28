@@ -18,6 +18,10 @@
 
   <!-- Scripts -->
 
+  <?php echo js('js/libs/jquery.js') ?>
+  <?php echo js('js/plugins/scalablelightbox.js') ?>
+  <?php echo js('js/main.js') ?>
+
   <?php echo js('js/libs/modernizr.js') ?>
 
   <? if($page->hasImages()): ?>
@@ -27,3 +31,4 @@
 </head>
 
 <body>
+  <div class="container">

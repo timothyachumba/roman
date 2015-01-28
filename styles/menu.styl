@@ -1,5 +1,21 @@
 @import "mixins"
 
+@-webkit-keyframes fadeIn
+  from
+    -webkit-transform scale(0.9) translateY(-20px)
+    opacity: 0
+  to
+    -webkit-transform scale(1) translateY(0)
+    opacity: 1
+
+@-moz-keyframes fadeIn
+  from
+    -moz-transform scale(0.9) translateY(-20px)
+    opacity: 0
+  to
+    -moz-transform scale(1) translateY(0)
+    opacity: 1
+
 nav.menu
   position absolute
   top 0
@@ -9,14 +25,21 @@ nav.menu
   height 100%
   z-index 1
 
-  ol
+  .rows
     display table
     table-layout fixed
     padding 110px 0 0 10px
     height 100%
 
-    li
+    .menu-item
       display table-row
+      opacity: 0
+
+      &.animation
+        opacity 1
+        animation fadeIn 300ms ease
+        animation-fill-mode both
+        animation-delay 1000ms
 
       div
         display table-cell

@@ -1,14 +1,14 @@
 <?php snippet('header') ?>
 
-<div class="container">
-
   <header>
-    <h1><?= $site->title() ?></h1>
+    <h1 class="logo"><a href="/"><?= $site->title() ?></a></h1>
   </header>
+
   <?php snippet('menu') ?>
+
   <div class="previews">
     <?php foreach($pages->find('projects')->children() as $project): ?>
-      <div class="preview hidden" style="background-image: url(<?= $project->images()->first()->url(); ?>)" id="<?= $project->uid() ?>">
+      <div class="preview notVisible" style="background-image: url(<?= $project->images()->first()->url(); ?>)" id="<?= $project->uid() ?>">
       </div>
     <?php endforeach ?>
   </div>
@@ -27,6 +27,4 @@
     </div>
   <?php endforeach ?>
 
-</div>
-
-<?php snippet('scalablelightbox') ?>
+<?php snippet('footer') ?>
