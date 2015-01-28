@@ -5,4 +5,2948 @@
 //     https://scalable-lightbox.com/
 
 
-!function(a){"function"==typeof define&&define.amd?define(["jquery"],a($,window)):a(jQuery,window)}(function(a,b){"use strict";function c(a,c){b.console&&("error"===a?b.console.error?b.console.error(c):b.console.log("ERROR: "+c):"warn"===a?b.console.warn?b.console.warn(c):b.console.log("WARN: "+c):"info"===a?b.console.info?b.console.info(c):b.console.log("INFO: "+c):"log"===a&&b.console.log(c))}a.ScalableLightbox=function(d){var e,f=a.data(document.body,"ScalableLightbox");if(f||(f={$container:null,$indexWrapper:null,$indexOverlay:null,$indexDecksContainer:null,indexState:"closed",$lightboxWrapper:null,$lightboxOverlay:null,$lightboxDecksContainer:null,$lightboxCaptionContainer:null,$lightboxCaptionLeft:null,$lightboxCaptionCenter:null,$lightboxCaptionRight:null,lightboxState:"closed",currentDeck:null,currentIndex:0,currentBlocking:!1,binded:{clicks:!1,touch:!1,keys:!1,resize:!1},prevScrollPosition:[],initPlugin:!1,initMasonry:!1,options:null,settings:{data:[],api:null,debug:!1,resize:"smartresize",hash:!0,baseImgPath:"",index:{enabled:!0,overlay:!0,layout:"float",thumb:{overlay:!0,width:280,caption:"number",captionNumberFmt:"%n% / %total%",captionPosition:"below",captionVerticalMargin:5},controls:{close:!0}},lightbox:{enabled:!0,overlay:!0,padding:{horizontal:100,vertical:100,horizontalMobile:50,verticalMobile:50},img:{captionLeft:"index",captionCenter:"caption",captionRight:"number",captionNumberFmt:"%n% / %total%",captionIndexTxt:"Index",captionPosition:"below",captionVerticalMargin:5},controls:{close:!0,clicks:!0,keys:!0}},callbacks:{loaded:null,open:null,close:null,resize:null},classNames:{clearfix:"clearfix",pluginActive:"sl-active",container:"sl-container",indexOverlay:"sl-index-overlay",indexWrapper:"sl-index-wrapper",indexDecksContainer:"sl-index-decks-container",indexDeck:"sl-index-deck",indexItem:"sl-index-item",indexItemImg:"sl-index-item-img",indexItemIndicator:"sl-index-item-indicator",indexItemOverlay:"sl-index-item-overlay",indexItemCaption:"sl-index-item-caption",indexItemCaptionInner:"sl-index-item-caption-inner",lightboxOverlay:"sl-lightbox-overlay",lightboxWrapper:"sl-lightbox-wrapper",lightboxDecksContainer:"sl-lightbox-decks-container",lightboxDeck:"sl-lightbox-deck",lightboxItem:"sl-lightbox-item",lightboxItemIndicator:"sl-lightbox-item-indicator",lightboxItemCaptionContainer:"sl-lightbox-caption-container",lightboxIndexLink:"sl-lightbox-index-link",lightboxCursor:"sl-lightbox-cursor"},transitions:{fadeInIndexOverlay:500,fadeOutIndexOverlay:500,fadeInIndex:500,fadeOutIndex:500,fadeInIndexItemLoaded:250,fadeInLightboxOverlay:500,fadeOutLightboxOverlay:500,fadeInLightbox:500,fadeOutLightbox:500,fadeInLightboxItemLoaded:250,fadeLightboxItem:250}},_init:function(b,c){var d=this;return this.initPlugin?(d._debug("error","The plugin has already been initialized!"),!1):(this.options=a.extend(!0,{},this.settings,b),void(this.options.index.enabled||this.options.lightbox.enabled?(this.$container=a("<div />").addClass(this.options.classNames.container),a("body").append(this.$container),this._loadData(c)):d._debug("error","Neither the index module, nor the lightbox module is enabled!")))},_loadData:function(b){var c=this,d=function(){return c.options.index.enabled&&c._tmplIndex(),c.options.lightbox.enabled&&c._tmplLightbox(),c.initPlugin=!0,c._loadDecks(b),c._bind(),!0};null!==this.options.api?a.ajax({type:"GET",dataType:"json",url:this.options.api,success:function(a){c._debug("info","Inserted JSON Stream: "),c._debug("info",a),c.options.data=c._normalizeData(a),d()},error:function(a){return c._debug("error","JSON Error occured!"),c._debug("error",a),!1}}):this.options.data.length>0?(this.options.data=this._normalizeData(this.options.data),d()):this._debug("error","The data could not be loaded!")},_normalizeData:function(a){var b=0,c=0,d=0,e=a.length,f=0,g=null,h=null,i=[],j=[];for(b;e>b;b++)if(g=a[b],"undefined"==typeof g.id||"undefined"==typeof g.items||0===g.items.length)i.push(b);else{for(j=[],f=g.items.length,c=0;f>c;c++)h=g.items[c],"undefined"!=typeof h.img&&"undefined"!=typeof h.width&&"undefined"!=typeof h.height?(h.ratio=h.height/h.width,h.loaded=!1,h.thumbloaded="undefined"!=typeof h.thumb&&null!==h.thumb?!1:"same"):j.push(c);if(j.length===g.items.length)i.push(b);else for(j.reverse(),d=0;d<j.length;d++)g.items.splice(j[d],1)}for(i.reverse(),d=0;d<i.length;d++)a.splice(i[d],1);return a},_loadDecks:function(a){var b=this.options.data,c=b.length,d=0;if(a="function"==typeof a?a:!1,this.options.index.enabled){for(d=0;c>d;d++)this.$indexDecksContainer.append(this._tmplIndexDeck(b[d]));this._resizeIndex("all"),this._createMasonry()}if(this.options.lightbox.enabled)for(d=0;c>d;d++)this.$lightboxDecksContainer.append(this._tmplLightboxDeck(b[d]));this._setDeck(!1),this._bindClicks(),this._hashListener(),a&&a(),"function"==typeof this.options.callbacks.loaded&&this.options.callbacks.loaded()},_loadImgs:function(b){var c=this,d=null,e=this.options.classNames,f=this.options.transitions,g=function(a,b,d,e,g,h){d.after(b),d.hide(),"undefined"!=typeof Modernizr&&Modernizr.csstransitions?b.addClass("loaded"):b.fadeIn(f["fadeIn"+c._capitalize(e)+"ItemLoaded"]),1===g?(a.thumbloaded=!0,a.loaded=!0,c._debug("info","Loading image: "+h)):2===g?(a.thumbloaded=!0,c._debug("info","Loading thumb image: "+h)):3===g&&(a.loaded=!0,c._debug("info","Loading image: "+h))};this.options[b].enabled&&(d=this["$"+b+"DecksContainer"].find("#"+e[b+"Deck"]+"-"+this.currentDeck.id+" ."+e[b+"ItemIndicator"]),"index"===b?a.each(this.currentDeck.items,function(b,e){var h,i=d.eq(b),j=a("<img />");if("loading"===e.thumbloaded)return!1;if("same"===e.thumbloaded)h=c.options.baseImgPath+e.img,e.loaded===!0?(i.after(j.attr("src",h)),i.hide(),"undefined"!=typeof Modernizr&&Modernizr.csstransitions?j.addClass("loaded"):j.fadeIn(f.fadeInIndexItemLoaded),e.thumbloaded=!0,c._debug("info","Appended already loaded image: "+h)):(e.thumbloaded="loading",j.one("load",function(){g(e,j,i,"index",1,h)}).attr("src",h));else{if(e.thumbloaded)return!1;h=c.options.baseImgPath+e.thumb,e.thumbloaded="loading",j.one("load",function(){g(e,j,i,"index",2,h)}).attr("src",h)}}):"lightbox"===b&&a.each(this.currentDeck.items,function(b,e){var h=d.eq(b),i=a("<img />"),j=c.options.baseImgPath+e.img;if("loading"===e.loaded)return!1;if(e.loaded){if(h.parent().find("img").length>0)return!1;h.after(i.attr("src",j)),h.hide(),"undefined"!=typeof Modernizr&&Modernizr.csstransitions?i.addClass("loaded"):i.fadeIn(f.fadeInLightboxItemLoaded),e.loaded=!0,c._debug("info","Appended already loaded image: "+j)}else e.loaded="loading",i.one("load",function(){g(e,i,h,"lightbox",3,j)}).attr("src",j)}))},_setDeck:function(a){var b=!1,c=null,d=this.options.data,e=d.length,f=0;if(a!==!1)for(f;e>f;f++)if(c=d[f],c.id===a){b=!0,this.currentDeck=c;break}b||(this.currentDeck=d[0],this.currentIndex=0)},open:function(b,c){var d=this,e=null,f="",g=this.options.classNames,h=this.options.transitions;return c="function"==typeof c?c:!1,this.currentBlocking?!1:(this.currentBlocking=!0,b=a.extend(!0,{module:"lightbox",deck:!1,index:0},b),this._setDeck(b.deck),this.currentIndex=b.index,e=function(){d["$"+b.module+"DecksContainer"].find("."+g[b.module+"Deck"]).hide(),d["$"+b.module+"DecksContainer"].find("#"+g[b.module+"Deck"]+"-"+d.currentDeck.id).show(),d["$"+b.module+"Wrapper"].fadeIn(h["fadeIn"+d._capitalize(b.module)],function(){d[b.module+"State"]="opened",d._loadImgs(b.module),d._bind(),d._changeHash(b.module),"index"===b.module?d.resize():(d.currentBlocking=!1,d.goto(b.index)),c?c():"function"==typeof d.options.callbacks.open&&d.options.callbacks.open()}),a("body").addClass(g.pluginActive),d.currentBlocking=!1},f="index"===b.module?"lightbox":"index",void(this.options[b.module].enabled?("opened"===this[f+"State"]&&this.close(),"index"===b.module&&this._resizeIndex("current"),this.options[b.module].overlay?this["$"+b.module+"Overlay"].fadeIn(h["fadeIn"+d._capitalize(b.module)+"Overlay"],e):e()):this._debug("error","The "+b.module+" module is not activated and can therefore not be displayed!")))},close:function(c){var d=this,e="index",f=this.options.classNames,g=this.options.transitions,h=null;if(c="function"==typeof c?c:!1,"opened"===this.lightboxState)e="lightbox";else if("closed"===this.indexState)return c&&c(),void this._debug("info","Nothing could be closed, as everything is already closed.");this._bind(!0),a("body").removeClass(f.pluginActive),h=function(){d["$"+e+"DecksContainer"].find("#"+f[e+"Deck"]+"-"+d.currentDeck.id).hide(),d[e+"State"]="closed",d._changeHash("close"),"lightbox"===e&&(d.$lightboxDecksContainer.css({width:0,height:0,marginLeft:0,marginTop:0}),d.$lightboxDecksContainer.find("#"+f.lightboxDeck+"-"+d.currentDeck.id+" ."+f.lightboxItem).hide().removeClass("fadein"),d.$lightboxCaptionLeft.html(""),d.$lightboxCaptionCenter.html(""),d.$lightboxCaptionRight.html("")),2===d.prevScrollPosition.length&&(b.scrollTo(d.prevScrollPosition[0],d.prevScrollPosition[1]),d.prevScrollPosition=[]),c?c():"function"==typeof d.options.callbacks.close&&d.options.callbacks.close()},this["$"+e+"Wrapper"].fadeOut(g["fadeOut"+d._capitalize(e)],function(){d.options[e].overlay?d["$"+e+"Overlay"].fadeOut(g["fadeOut"+d._capitalize(e)+"Overlay"],h):h()})},destroy:function(b){b="function"==typeof b?b:!1,this._bind(!0),this._bindClicks(!0),this._bindIndexLink(!0),this._bindThumbLinks(!0),a.fn.masonry&&"masonry"===this.options.index.layout&&(this.$indexDecksContainer.find("."+this.options.classNames.indexDeck).masonry("destroy"),this.initMasonry=!1),this.$container.remove(),a("body").removeClass(this.options.classNames.pluginActive),b&&b(),this._debug("info","Plugin has been successfully removed."),this.options=null,this.initPlugin=!1},prev:function(){this._navigateTo("prev")},next:function(){this._navigateTo("next")},"goto":function(a){this._navigateTo(a)},_navigateTo:function(a){var b=this,c=0,d=0,e=this.options.classNames,f=this.options.transitions;return this.currentBlocking?!1:this.options.lightbox.enabled?"opened"!==this.lightboxState?(this._debug("info","The lightbox module has to be active (displayed) when using a navigation method!"),!1):"string"==typeof a&&1===this.currentDeck.items.length?!1:(this.currentBlocking=!0,"number"==typeof a?(d=a,c=this.$lightboxDecksContainer.find("#"+e.lightboxDeck+"-"+this.currentDeck.id+" ."+e.lightboxItem+".fadein").index(),(d>=this.currentDeck.items.length||0>d)&&(d=this.currentDeck.items.length-1),c===d&&(c=-1)):"prev"===a?(d=this.currentIndex-1,c=this.currentIndex,0>d&&(d=this.currentDeck.items.length-1,c=0)):"next"===a&&(d=this.currentIndex+1,c=d-1,d===this.currentDeck.items.length&&(c=this.currentDeck.items.length-1,d=0)),this.currentIndex=d,c>=0&&this.$lightboxDecksContainer.find("#"+e.lightboxDeck+"-"+this.currentDeck.id+" ."+e.lightboxItem).eq(c).fadeOut(f.fadeLightboxItem).removeClass("fadein"),this.$lightboxDecksContainer.find("#"+e.lightboxDeck+"-"+this.currentDeck.id+" ."+e.lightboxItem).eq(d).fadeIn(f.fadeLightboxItem,function(){b.currentBlocking=!1}).addClass("fadein"),this._adjustLightboxCaption(),this.resize(),void this._changeHash("lightbox")):!1},_adjustLightboxCaption:function(){var a=this.options.lightbox.img;this.$lightboxCaptionLeft.html(this._getCaptionTxt("lightbox",a.captionLeft)),this.$lightboxCaptionCenter.html(this._getCaptionTxt("lightbox",a.captionCenter)),this.$lightboxCaptionRight.html(this._getCaptionTxt("lightbox",a.captionRight))},_getCaptionTxt:function(a,b,c,d,e){var f,g,h="";switch("lightbox"===a&&(c=this.currentDeck.items[this.currentIndex]),f="undefined"!=typeof c.caption?c.caption:"",g="undefined"!=typeof c.thumbcaption?c.thumbcaption:f,b){case"index":if("index"===a||!this.options.index.enabled)break;h='<a href="#" class="',h+=this.options.classNames.lightboxIndexLink,h+='">'+this.options.lightbox.img.captionIndexTxt,h+="</a>";break;case"number":"index"===a?h=this.options.index.thumb.captionNumberFmt.replace(/%n%/gi,d+1).replace(/%total%/gi,e):"lightbox"===a&&(h=this.options.lightbox.img.captionNumberFmt.replace(/%n%/gi,this.currentIndex+1).replace(/%total%/gi,this.currentDeck.items.length));break;case"caption":h=f;break;case"thumbcaption":h=g}return h},_hashListener:function(){var a,c,d,e;this.options.hash&&(a=/#lightbox\/index\/(\d*)/,c=/#lightbox\/(\d*)\/(\d*)/,d=a.exec(b.location.hash),e=c.exec(b.location.hash),d?this.open({module:"index",deck:parseInt(d[1],10)}):e&&this.open({module:"lightbox",deck:parseInt(e[1],10),index:parseInt(e[2],10)}))},_changeHash:function(a){this.options.hash&&("index"===a?b.location.hash="#lightbox/index/"+this.currentDeck.id:"lightbox"===a?b.location.hash="#lightbox/"+this.currentDeck.id+"/"+this.currentIndex:"close"===a&&(b.location.hash=""))},resize:function(c){var d,e,f,g=this,h=a(b).width(),i=a(b).height(),j=h-(451>h||400>i?this.options.lightbox.padding.horizontalMobile:this.options.lightbox.padding.horizontal),k=i-(451>h||400>i?this.options.lightbox.padding.verticalMobile:this.options.lightbox.padding.vertical);c="function"==typeof c?c:!1,"opened"===this.indexState?(this._resizeIndex("current"),c?c():"function"==typeof g.options.callbacks.resize&&g.options.callbacks.resize(),this._debug("info","Index module has been resized.")):"opened"===this.lightboxState&&(this.$lightboxCaptionContainer.hide(),d=this.currentDeck.items[this.currentIndex],d?(e=d.width,f=d.height,e>j&&(e=j,f=e*d.ratio),f>k&&(f=k,e=1*f/d.ratio),this._resizeLightboxCaptions(e),"undefined"!=typeof Modernizr&&Modernizr.csstransitions?(this.$lightboxDecksContainer.css({width:e,height:f,marginLeft:-e/2,marginTop:-f/2}),this.$lightboxCaptionContainer.show(),c?c():"function"==typeof g.options.callbacks.resize&&g.options.callbacks.resize()):this.$lightboxDecksContainer.stop(!0,!1).animate({width:e,height:f,marginLeft:-e/2,marginTop:-f/2},this.options.transitions.fadeLightboxItem,function(){g.$lightboxCaptionContainer.show(),c?c():"function"==typeof g.options.callbacks.resize&&g.options.callbacks.resize()}),this._debug("info","Lightbox module has been resized.")):this._debug("error","The current item of the Lightbox module does not exist!"))},_resizeIndex:function(b){var c=this,d=this.$indexWrapper.is(":visible"),e=this.options.classNames,f=function(){var b=a(this),d=b.is(":visible");d||b.show(),c._resizeIndexCaptions(b),a.fn.masonry&&"masonry"===c.options.index.layout&&c.initMasonry&&b.masonry("resize"),d||b.hide()};d||this.$indexWrapper.show(),"all"===b?this.$indexDecksContainer.find("."+e.indexDeck).each(f):"current"===b&&this.$indexDecksContainer.find("#"+e.indexDeck+"-"+this.currentDeck.id).each(f),d||this.$indexWrapper.hide()},_resizeIndexCaptions:function(b){var c=this,d=this.options.index.thumb.captionPosition,e=this.options.classNames;"above"===d?b.find("."+e.indexItem).each(function(){var b=a(this),d=b.find("."+e.indexItemCaption),f=d.height()+c.options.index.thumb.captionVerticalMargin;b.css("marginTop",""),b.css({marginTop:parseInt(b.css("marginTop"))+f}),d.css({top:-f})}):"center"===d?b.find("."+e.indexItemCaption).each(function(){var b=a(this);b.css({marginTop:-b.height()/2})}):"below"===d&&b.find("."+e.indexItem).each(function(){var b=a(this),d=b.find("."+e.indexItemCaption),f=d.height()+c.options.index.thumb.captionVerticalMargin;b.css("marginBottom",""),b.css({marginBottom:parseInt(b.css("marginBottom"))+f}),d.css({bottom:-f})})},_resizeLightboxCaptions:function(a){var b,c,d=this.options.lightbox.img.captionPosition,e=this.options.lightbox.img.captionVerticalMargin;this.$lightboxCaptionContainer.css({width:a}).show(),this.$lightboxCaptionLeft.css("height","auto"),this.$lightboxCaptionCenter.css("height","auto"),this.$lightboxCaptionRight.css("height","auto"),b=Math.max(this.$lightboxCaptionLeft.height(),this.$lightboxCaptionCenter.height(),this.$lightboxCaptionRight.height()),this.$lightboxCaptionLeft.css("height","100%"),this.$lightboxCaptionCenter.css("height","100%"),this.$lightboxCaptionRight.css("height","100%"),("above"===d||"below"===d)&&(c=b+2*e-this.options.lightbox.padding.vertical/2,c>0&&(b-=c)),"above"===d?this.$lightboxCaptionContainer.css({top:-(b+e)}):"center"===d?this.$lightboxCaptionContainer.css({marginTop:-b/2}):"below"===d&&this.$lightboxCaptionContainer.css({bottom:-(b+e)}),this.$lightboxCaptionContainer.css({width:"",height:b}).hide()},_bind:function(a){a="undefined"==typeof a?!1:a,this._bindKeys(a),this._bindResize(a),this._bindCaptionLinks(a)},_bindKeys:function(c){var d=this;c?(this.options.index.enabled&&this.options.index.controls.close||this.options.lightbox.enabled&&this.options.lightbox.controls.keys)&&(a(b.document).unbind("keydown.scalableLightbox.navi"),a(b.document).unbind("keydown.scalableLightbox.close"),this._debug("info","Unbinding keyboard events."),this.binded.keys=!1):this.binded.keys||(this.options.lightbox.enabled&&this.options.lightbox.controls.keys&&a(b.document).bind("keydown.scalableLightbox.navi",function(a){switch(a.keyCode){case 37:"opened"===d.lightboxState&&d.prev();break;case 39:"opened"===d.lightboxState&&d.next()}}),(this.options.index.enabled&&this.options.index.controls.keys||this.options.lightbox.enabled&&this.options.lightbox.controls.keys)&&(a(b.document).bind("keydown.scalableLightbox.close",function(a){switch(a.keyCode){case 27:("opened"===d.indexState&&d.options.index.controls.close||"opened"===d.lightboxState&&d.options.lightbox.controls.close)&&d.close()}}),this._debug("info","Binded key events."),this.binded.keys=!0))},_bindResize:function(c){var d,e=this,f=!1;c?this.options.resize&&(a(b).unbind("resize.scalableLightbox"),this._debug("info","Unbinding resize event."),this.binded.resize=!1):this.binded.resize||("smartresize"===this.options.resize?(a(b).bind("resize.scalableLightbox",function(){d&&clearTimeout(d),d=setTimeout(function(){e.resize()},200)}),f=!0):this.options.resize&&(a(b).bind("resize.scalableLightbox",function(){e.resize()}),f=!0),f&&(this.binded.resize=!0,this._debug("info","Binded resize event.")))},_bindClicks:function(c){var d=this,e=!1,f=this.options.classNames,g=function(){c?(d.options.index.enabled&&d.options.index.controls.close&&(d.$indexWrapper.off("click.scalableLightbox.indexClose"),e=!0),d.options.lightbox.enabled&&d.options.lightbox.controls.close&&(d.$lightboxWrapper.off("click.scalableLightbox.lightboxClose"),e=!0),d.options.lightbox.enabled&&d.options.lightbox.controls.clicks&&(d.$lightboxDecksContainer.off("click.scalableLightbox.lightboxItem"),d.$lightboxWrapper.off("click.scalableLightbox.leftCursor"),d.$lightboxWrapper.off("click.scalableLightbox.rightCursor"),e=!0),e&&(d._debug("info","Unbinding click events."),d.binded.clicks=!1)):d.binded.clicks||(d.options.index.enabled&&d.options.index.controls.close&&(d.$indexWrapper.on("click.scalableLightbox.indexClose",function(){d.close()}),e=!0),d.options.lightbox.enabled&&d.options.lightbox.controls.close&&(d.$lightboxWrapper.on("click.scalableLightbox.lightboxClose",function(){d.close()}),e=!0),d.options.lightbox.enabled&&d.options.lightbox.controls.clicks&&(d.$lightboxDecksContainer.on("click.scalableLightbox.lightboxItem","."+f.lightboxItem,function(a){a.stopPropagation()}),d.$lightboxWrapper.on("click.scalableLightbox.leftCursor","."+f.lightboxCursor+".left",function(a){a.stopPropagation(),d.prev()}),d.$lightboxWrapper.on("click.scalableLightbox.rightCursor","."+f.lightboxCursor+".right",function(a){a.stopPropagation(),d.next()}),e=!0),e&&(d._debug("info","Binded click events."),d.binded.clicks=!0))};"function"==typeof b.define&&b.define.amd&&"undefined"!=typeof Modernizr&&Modernizr.touch?require(["hammer"],function(){d._bindTouch(c)},function(){g()}):a.fn.hammer&&"undefined"!=typeof Modernizr&&Modernizr.touch?this._bindTouch(c):g()},_bindTouch:function(a){var b=this,c=!1,d=this.options.classNames;a?(this.options.index.enabled&&(this.options.index.controls.close&&this.$indexWrapper.hammer().off("tap.scalableLightbox.indexClose"),this.$indexWrapper.hammer().off("drag.scalableLightbox.indexInner swipe.scalableLightbox.indexInner"),this.$indexWrapper.hammer().off("drag.scalableLightbox.indexOuter swipe.scalableLightbox.indexOuter"),c=!0),this.options.lightbox.enabled&&(this.options.lightbox.controls.close&&this.$lightboxWrapper.hammer().off("tap.scalableLightbox.lightboxClose"),this.$lightboxWrapper.hammer().off("tap.scalableLightbox.leftCursor tap.scalableLightbox.rightCursor"),this.$lightboxWrapper.hammer().off("drag.scalableLightbox.navi"),this.$lightboxDecksContainer.hammer().off("swipe.scalableLightbox.navi"),c=!0),c&&(this._debug("info","Unbinding touch events."),this.binded.touch=!1)):this.binded.touch||(this.options.index.enabled&&(this.options.index.controls.close&&this.$indexWrapper.hammer().on("tap.scalableLightbox.indexClose",function(a){a.gesture.preventDefault(),b.close()}),this.$indexWrapper.hammer().on("drag.scalableLightbox.indexInner swipe.scalableLightbox.indexInner","."+d.indexDecksContainer,function(a){a.stopPropagation()}),this.$indexWrapper.hammer().on("drag.scalableLightbox.indexOuter swipe.scalableLightbox.indexOuter",function(a){a.gesture.preventDefault(),a.gesture.stopPropagation()}),c=!0),this.options.lightbox.enabled&&(this.options.lightbox.controls.close&&this.$lightboxWrapper.hammer().on("tap.scalableLightbox.lightboxClose",function(a){a.gesture.preventDefault(),b.close()}),this.$lightboxWrapper.hammer().on("tap.scalableLightbox.leftCursor","."+d.lightboxCursor+".left",function(a){a.stopPropagation(),b.prev()}),this.$lightboxWrapper.hammer().on("tap.scalableLightbox.rightCursor","."+d.lightboxCursor+".right",function(a){a.stopPropagation(),b.next()}),this.$lightboxWrapper.hammer().on("drag.scalableLightbox.navi",function(a){"left"===a.target.className||"center"===a.target.className||"right"===a.target.className?a.gesture.stopPropagation():(a.gesture.stopPropagation(),a.gesture.preventDefault())}),this.$lightboxDecksContainer.hammer({swipeVelocityX:.4}).on("swipe.scalableLightbox.navi",function(a){switch(a.gesture.preventDefault(),a.gesture.stopPropagation(),a.gesture.direction){case"left":b.next();break;case"right":b.prev()}}),c=!0),c&&(this._debug("info","Binded touch events."),this.binded.touch=!0))},_bindIndexLink:function(c){var d=this,e=this.options.classNames,f=function(){c?d.$lightboxWrapper.hammer().off("tap.scalableLightbox.indexItem"):d.$lightboxWrapper.hammer().on("tap.scalableLightbox.indexItem","a."+e.lightboxIndexLink,function(a){a.stopPropagation(),d.open({module:"index",deck:d.currentDeck.id})})},g=function(){c?d.$lightboxWrapper.off("click.scalableLightbox.indexItem"):d.$lightboxWrapper.on("click.scalableLightbox.indexItem","a."+e.lightboxIndexLink,function(a){a.preventDefault(),a.stopPropagation(),d.open({module:"index",deck:d.currentDeck.id})})};"function"==typeof b.define&&b.define.amd&&"undefined"!=typeof Modernizr&&Modernizr.touch?require(["hammer"],function(){f()},function(){g()}):a.fn.hammer&&"undefined"!=typeof Modernizr&&Modernizr.touch?f():g()},_bindThumbLinks:function(c){var d=this,e=this.options.classNames,f=function(){c?d.$indexWrapper.hammer().off("tap.scalableLightbox.thumbLinks"):d.$indexWrapper.hammer().on("tap.scalableLightbox.thumbLinks","."+e.indexItem,function(b){b.gesture.stopPropagation(),d.options.lightbox.enabled?d.open({module:"lightbox",deck:d.currentDeck.id,index:a(this).index()}):d._debug("error","The lightbox module cannot be opened, because it is not enabled!")})},g=function(){c?d.$indexWrapper.off("click.scalableLightbox.thumbLinks"):d.$indexWrapper.on("click.scalableLightbox.thumbLinks","."+e.indexItem,function(b){b.preventDefault(),b.stopPropagation(),d.options.lightbox.enabled?d.open({module:"lightbox",deck:d.currentDeck.id,index:a(this).index()}):d._debug("error","The lightbox module cannot be opened, because it is not enabled!")})};"function"==typeof b.define&&b.define.amd&&"undefined"!=typeof Modernizr&&Modernizr.touch?require(["hammer"],function(){f()},function(){g()}):a.fn.hammer&&"undefined"!=typeof Modernizr&&Modernizr.touch?f():g()},_bindCaptionLinks:function(c){var d=this,e=this.options.classNames,f=function(){c?(d.options.index.enabled&&d.$indexDecksContainer.hammer().off("tap.scalableLightbox.indexCaptionLinks"),d.options.lightbox.enabled&&d.$lightboxCaptionContainer.hammer().off("tap.scalableLightbox.lightboxCaptionLinks")):(d.options.index.enabled&&d.$indexDecksContainer.hammer().on("tap.scalableLightbox.indexCaptionLinks","."+e.indexItemCaption+" a",function(a){a.gesture.stopPropagation()}),d.options.lightbox.enabled&&d.$lightboxCaptionContainer.hammer().on("tap.scalableLightbox.lightboxCaptionLinks","a:not(."+e.lightboxIndexLink+")",function(a){a.gesture.stopPropagation()}))},g=function(){c?(d.options.index.enabled&&d.$indexDecksContainer.off("click.scalableLightbox.indexCaptionLinks"),d.options.lightbox.enabled&&d.$lightboxCaptionContainer.off("click.scalableLightbox.lightboxCaptionLinks")):(d.options.index.enabled&&d.$indexDecksContainer.on("click.scalableLightbox.indexCaptionLinks","."+e.indexItemCaption+" a",function(a){a.stopPropagation()}),d.options.lightbox.enabled&&d.$lightboxCaptionContainer.on("click.scalableLightbox.lightboxCaptionLinks","a:not(."+e.lightboxIndexLink+")",function(a){a.stopPropagation()}))};"function"==typeof b.define&&b.define.amd&&"undefined"!=typeof Modernizr&&Modernizr.touch?require(["hammer"],function(){f()},function(){g()}):a.fn.hammer&&"undefined"!=typeof Modernizr&&Modernizr.touch?f():g()},_tmplIndex:function(){var b=this.options.classNames;this.options.index.overlay&&(this.$indexOverlay=a("<div />").addClass(b.indexOverlay),this.$container.append(this.$indexOverlay)),this.$indexWrapper=a("<div />").addClass(b.indexWrapper),this.$indexDecksContainer=a("<div />").addClass(b.indexDecksContainer),"float"===this.options.index.layout&&this.$indexDecksContainer.addClass(b.clearfix),this.$indexWrapper.append(this.$indexDecksContainer),this.$container.append(this.$indexWrapper),this._bindThumbLinks()},_tmplIndexDeck:function(b){var c=this.options.classNames,d=a('<div class="'+c.indexDeck+'" id="'+c.indexDeck+"-"+b.id+'"></div>'),e=0,f=b.items.length;for(e;f>e;e++)d.append(this._tmplIndexItem(b.items[e],e,f));return d},_tmplIndexItem:function(b,c,d){var e=this.options.index.thumb.captionPosition,f=this.options.classNames,g=a('<div class="'+f.indexItem+'"><div class="'+f.indexItemOverlay+'"></div><div class="'+f.indexItemImg+'"><div class="'+f.indexItemIndicator+'"></div></div><div class="'+f.indexItemCaption+'"><div class="'+f.indexItemCaptionInner+'"></div></div></div>');return this.options.index.thumb.overlay||g.find("."+f.indexItemOverlay).remove(),("top"===e||"center"===e||"bottom"===e)&&g.find("."+f.indexItemCaption).addClass(e),g.find("."+f.indexItemCaptionInner).html(this._getCaptionTxt("index",this.options.index.thumb.caption,b,c,d)),g.css({height:this.options.index.thumb.width*b.ratio,width:this.options.index.thumb.width}),g},_tmplLightbox:function(){var b,c,d=this.options.lightbox.img.captionPosition,e=this.options.classNames;this.options.lightbox.overlay&&(this.$lightboxOverlay=a("<div />").addClass(e.lightboxOverlay),this.$container.append(this.$lightboxOverlay)),this.$lightboxWrapper=a("<div />").addClass(e.lightboxWrapper),this.$lightboxDecksContainer=a("<div />").addClass(e.lightboxDecksContainer),this.$lightboxWrapper.append(this.$lightboxDecksContainer),this.options.lightbox.controls.clicks&&(b=a("<div />").addClass(e.lightboxCursor).addClass("left"),c=a("<div />").addClass(e.lightboxCursor).addClass("right"),this.$lightboxDecksContainer.append(b),this.$lightboxDecksContainer.append(c)),this.$lightboxCaptionContainer=a("<div />").addClass(e.lightboxItemCaptionContainer),("top"===d||"center"===d||"bottom"===d)&&this.$lightboxCaptionContainer.addClass(d),this.$lightboxCaptionLeft=a("<div />").addClass("left"),this.$lightboxCaptionCenter=a("<div />").addClass("center"),this.$lightboxCaptionRight=a("<div />").addClass("right"),this.$lightboxCaptionContainer.append(this.$lightboxCaptionLeft),this.$lightboxCaptionContainer.append(this.$lightboxCaptionCenter),this.$lightboxCaptionContainer.append(this.$lightboxCaptionRight),this.$lightboxDecksContainer.append(this.$lightboxCaptionContainer),this.$container.append(this.$lightboxWrapper),this._bindIndexLink()},_tmplLightboxDeck:function(b){var c=this.options.classNames,d=a('<div class="'+c.lightboxDeck+'" id="'+c.lightboxDeck+"-"+b.id+'"></div>'),e=0,f=b.items.length;for(e;f>e;e++)d.append('<div class="'+c.lightboxItem+'"><div class="'+c.lightboxItemIndicator+'"></div></div>');return d},_debug:function(a,b){this.options.debug&&c(a,b)},_capitalize:function(a){return a.charAt(0).toUpperCase()+a.slice(1)},_createMasonry:function(){var c=this,d=this.options.classNames,e=function(){c.$indexDecksContainer.find("."+d.indexDeck).addClass("masonry").masonry({itemSelector:"."+d.indexItem,isFitWidth:!0,isResizable:!1}),c.initMasonry=!0};"function"==typeof b.define&&b.define.amd?require(["masonry"],function(){e()},function(){c._debug("error","Masonry is activated, however the jQuery Masonry plugin via requirejs is missing!")}):a.fn.masonry&&"masonry"===this.options.index.layout?e():"masonry"===this.options.index.layout&&this._debug("error","Masonry is activated, however the jQuery Masonry plugin is missing!")}},a.data(document.body,"ScalableLightbox",f)),"string"!=typeof d)return f._init(d,"undefined"!=typeof arguments[1]?arguments[1]:!1);if(e=Array.prototype.slice.call(arguments,1),a.isFunction(f[d])&&"_"!==d.charAt(0)){if(f.initPlugin)return f[d].apply(f,e);c("error","Method '"+d+"' called prior to plugin initialization!")}else c("error","No such method '"+d+"' exists!")}});
+;(function(factory) {
+
+  /* jshint strict: false */
+
+  if (typeof define === "function" && define.amd) {
+
+    // AMD. Register as an anonymous module.
+    define(["jquery"], factory($, window));
+
+  } else {
+
+    // Browser globals.
+    factory(jQuery, window);
+
+  }
+
+}(function($, window, undefined) {
+
+  "use strict";
+
+  // Debugger function to display information in the browser's console.
+  function _debug(type, msg) {
+
+    if (window.console) {
+
+      if (type === "error") {
+
+        if (window.console.error) {
+          window.console.error(msg);
+        } else {
+          window.console.log("ERROR: " + msg);
+        }
+
+      } else if (type === "warn") {
+
+        if (window.console.warn) {
+          window.console.warn(msg);
+        } else {
+          window.console.log("WARN: " + msg);
+        }
+
+      } else if (type === "info") {
+
+        if (window.console.info) {
+          window.console.info(msg);
+        } else {
+          window.console.log("INFO: "+msg);
+        }
+
+      } else if (type === "log") {
+        window.console.log(msg);
+      }
+
+    }
+
+  }
+
+
+  $.ScalableLightbox = function(options) {
+
+    // Singleton pattern
+    // ------------------
+    // The `ScalableLightbox` plugin augments the singleton pattern
+    // for better performance. After initial configuration via
+    // the `options` attribute, the plugin may display one or
+    // multiple `decks` in the *index and or lightbox module*.
+    var instance = $.data(document.body, "ScalableLightbox"),
+        args;
+
+    if (!instance) {
+
+      instance = {
+
+        // Instance Vars
+        // -------------
+        // **Note:** All instance variables with a affix `$` sign
+        // are `jQuery` objects.
+
+        // Container element that holds the whole HTML code of
+        // this plugin.
+        $container:                 null,
+
+        // These are *index module* related objects.
+        $indexWrapper:              null,
+        $indexOverlay:              null,
+        $indexDecksContainer:       null,
+
+        // The current state of the *index module*. Either `closed`
+        // or `opened` (meaning it is displayed).
+        indexState:                 "closed",
+
+        // These are *lightbox module* related objects.
+        $lightboxWrapper:           null,
+        $lightboxOverlay:           null,
+        $lightboxDecksContainer:    null,
+        $lightboxCaptionContainer:  null,
+        $lightboxCaptionLeft:       null,
+        $lightboxCaptionCenter:     null,
+        $lightboxCaptionRight:      null,
+
+        // The current state of the *lightbox module*. Either `closed`
+        // or `opened` (meaning it is displayed).
+        lightboxState:              "closed",
+
+        // Current `deck` object, relevant for portrayal in the
+        // *lightbox module*.
+        currentDeck:                null,
+        currentIndex:               0,
+        currentBlocking:            false,
+
+        // Event bindings (whether click, touch, keyboard and
+        // resize events were previously binded).
+        binded: {
+          clicks:                   false,
+          touch:                    false,
+          keys:                     false,
+          resize:                   false
+        },
+
+        // Move to the previous scroll position. Necessary for the
+        // annoying iOS address bar.
+        prevScrollPosition:         [],
+
+        // Whether the plugin or the masonry (if activated) has
+        // been initialized.
+        initPlugin:                 false,
+        initMasonry:                false,
+
+        // The `options` object, which is provided by the initial
+        // plugin call and overwrites defaults defined in the
+        // `settings` object below.
+        options:                    null,
+
+
+        // Settings
+        // ========
+        settings: {
+
+          // Data Settings
+          // -------------
+          // The data for the plugin can either be provided directly via the `data` attribute,
+          // or via JSON by defining the URL in the `api` attribute below. The data structure is
+          // the same for both data sources. It consists of `deck` objects with the following structure:
+          //
+          //     [
+          //       { // deck with id 1
+          //         id: 1, items: [
+          //           { img: "img/1.jpg", width: 1000, height: 700, caption: "lorem ipsum 1" },
+          //           { img: "img/2.jpg", width: 1300, height: 666, caption: "lorem ipsum 2" }
+          //         ]
+          //       },
+          //       { // deck with id 2
+          //         id: 2, items: [
+          //           { img: "img/1.jpg", width: 1000, height: 700, caption: "lorem ipsum 1", thumb: "img/1-thumb.jpg", thumbcaption: "thumb 1" },
+          //           { img: "img/2.jpg", width: 1300, height: 666, caption: "lorem ipsum 2", thumb: "img/2-thumb.jpg", thumbcaption: "thumb 2" }
+          //         ]
+          //       },
+          //       // additional decks ...
+          //     ]
+          //
+          // Each deck needs to have a unique `id` attribute (to later be callable), as well as an
+          // `items` array. An item may have the following attributes:
+          // * `img` the path to the image (required)
+          // * `width` and `height` of the image, necessary to resize
+          //    the *lightbox module* according to the image's aspect ratio (required)
+          // * `caption` the image description (optional)
+          // * `thumb` an image for the *index module*, otherwise `img` is used (optional)
+          // * `thumbcaption` a description for the *index module* (optional)
+          data:                             [],
+          api:                              null,
+
+
+          // General Settings
+          // ----------------
+          // *General settings that are not specific to the index or lightbox module.*
+
+          // Whether debug information should be displayed.
+          debug:                            false,
+
+          // How the plugin resizes itself. The `resize` attribute may take one
+          // of the following values:
+          // * `"smartresize"` debounced resizing for better performance
+          // * `true` resize the plugin on every window resize event
+          // * `false` to deactivate auto-resize, in case you are triggering
+          //    the resizing of the plugin within your own code by calling
+          //    `$.ScalableLightbox("resize");`
+          resize:                           "smartresize",
+
+          // Whether the plugin should react to hashes on pageload and also change the
+          // URL accordingly, if the *index or lightbox module* is called.
+          hash:                             true,
+
+          // The base path for image URL's. If the variable is set, the `baseImgPath` will
+          // be placed in front of all `img` and `thumb` paths of every deck. **Attention:**
+          // Please provide a slash at the end of the path.
+          baseImgPath:                      "",
+
+
+
+          // Index Module Settings
+          // ---------------------
+          // *Settings related to the functionality of the index module.*
+          index: {
+            // Whether the *index module* is activated.
+            enabled:                        true,
+
+            // If the *index module* is displayed on top of an overlay div.
+            overlay:                        true,
+
+            // The layout of the thumbs, valid values are `"float"` and `"masonry"`.
+            // For the masonry option, you need to include the masonry plugin.
+            layout:                         "float",
+
+            thumb: {
+              // Whether thumbs themselves have an overlay.
+              overlay:                      true,
+
+              // The width of a thumbnail (the height is calculated automatically
+              // out of the `width` and `height` of the corresponding deck item).
+              width:                        280,
+
+              // What should be displayed as a caption of the thumb. Valid attributes are:
+              // * `"none"` no caption is displayed
+              // * `"caption"` the caption of the data item is displayed
+              // * `"thumbcaption"` the thumb caption of the data item is used
+              // * `"number"` the number of the item is displayed (e.g. 2 / 10)
+              //    according to `captionNumberFmt` below
+              caption:                      "number",
+
+              // In case `caption` is set to `"number"`, how the number should be
+              // displayed. Use `%n%` to display the thumbs position and `%total%`
+              // to show the total items in the current deck. For example, `"%n% of %total%"`,
+              // will display: *1 of 10*, *2 of 10*, etc.
+              captionNumberFmt:             "%n% / %total%",
+
+              // The position of the caption. Valid attributes are:
+              // * `"above"` above the thumb (use `captionVerticalMargin` for vertical spacing)
+              // * `"top"` at the top border of the thumb
+              // * `"center"` at the center of the thumb
+              // * `"bottom"` at the bottom of the thumb
+              // * `"below"` below the thumb (use `captionVerticalMargin` for vertical spacing)
+              captionPosition:              "below",
+
+              // The margin to the thumbnail, in case a caption is positioned
+              // `"above"` or `"below"`.
+              captionVerticalMargin:        5
+            },
+
+            controls: {
+              // Whether a click or touch outside an index element as well as
+              // ESC key closes the *index module*.
+              close:                        true
+            }
+          },
+
+
+          // Lightbox Module Settings
+          // ------------------------
+          // *Settings related to the functionality of the lightbox module.*
+          lightbox: {
+            // Whether the *lightbox module* is activated.
+            enabled:                        true,
+
+            // If the *lightbox module* is displayed on top of an overlay div.
+            overlay:                        true,
+
+            // The padding for the lightbox images to the browser window. The values
+            // are divided by 2, to have an equal padding on each side.
+            padding: {
+              horizontal:                   100,
+              vertical:                     100,
+
+              // The paddings for window width's below 450 pixel, or window height's
+              // below 400 pixel.
+              horizontalMobile:             50,
+              verticalMobile:               50,
+            },
+
+            // There are three caption positions provided (left, center, right)
+            // for the lightbox. Valid attributes are:
+            // * `"none"` no caption is displayed
+            // * `"caption"` the caption of the data item is displayed
+            // * `"thumbcaption"` the thumbcaption of the data item is used
+            // * `"number"` the number of the item is displayed (e.g. 2 / 10)
+            //    according to `captionNumberFmt`
+            // * `index` a link to the *index module* (if enabled) is displayed,
+            //    change the link text, by changing `captionIndexTxt` accordingly
+            img: {
+              captionLeft:                  "index",
+              captionCenter:                "caption",
+              captionRight:                 "number",
+              captionNumberFmt:             "%n% / %total%",
+              captionIndexTxt:              "Index",
+
+              // The position of the caption. Valid attributes are:
+              // * `"above"` above the lightbox (use `captionVerticalMargin` for spacing)
+              // * `"top"` at the top border of the lightbox
+              // * `"center"` at the center of the lightbox
+              // * `"bottom"` at the bottom of the lightbox
+              // * `"below"` below the lightbox (use `captionVerticalMargin` for spacing)
+              captionPosition:              "below",
+
+              // The margin to the thumbnail, in case a caption is positioned
+              // `"above"` or `"below"`.
+              captionVerticalMargin:        5
+            },
+
+            controls: {
+              // Whether a click, touch outside as well as ESC key closes the module.
+              close:                        true,
+
+              // Whether click events for moving left and right are enabled.
+              clicks:                       true,
+
+              // Whether left and right keyboard arrows are used for navigation.
+              keys:                         true
+            }
+          },
+
+
+          // Callbacks
+          // ---------
+          // *General callbacks*. These functions are executed every time when a call to
+          // a corresponding public function is finished. In order to use nonrecurring callbacks,
+          // you may send them along with the call the corresponding public function.
+          callbacks: {
+            loaded:                         null,
+            open:                           null,
+            close:                          null,
+            resize:                         null
+          },
+
+
+          // Class Names
+          // -----------
+          // *The CSS class names that are used for the HTML structure of the plugin.*
+          // The attribute names should be self explaining, otherwise please study
+          // the HTML structure and class names in your browser.
+          classNames: {
+            clearfix:                       "clearfix",
+            pluginActive:                   "sl-active",
+            container:                      "sl-container",
+
+            indexOverlay:                   "sl-index-overlay",
+            indexWrapper:                   "sl-index-wrapper",
+            indexDecksContainer:            "sl-index-decks-container",
+            indexDeck:                      "sl-index-deck",
+            indexItem:                      "sl-index-item",
+            indexItemImg:                   "sl-index-item-img",
+            indexItemIndicator:             "sl-index-item-indicator",
+            indexItemOverlay:               "sl-index-item-overlay",
+            indexItemCaption:               "sl-index-item-caption",
+            indexItemCaptionInner:          "sl-index-item-caption-inner",
+
+            lightboxOverlay:                "sl-lightbox-overlay",
+            lightboxWrapper:                "sl-lightbox-wrapper",
+            lightboxDecksContainer:         "sl-lightbox-decks-container",
+            lightboxDeck:                   "sl-lightbox-deck",
+            lightboxItem:                   "sl-lightbox-item",
+            lightboxItemIndicator:          "sl-lightbox-item-indicator",
+            lightboxItemCaptionContainer:   "sl-lightbox-caption-container",
+            lightboxIndexLink:              "sl-lightbox-index-link",
+            lightboxCursor:                 "sl-lightbox-cursor"
+          },
+
+
+          // Transitions
+          // -----------
+          // *Durations of transitions used for the different animations of the plugin.*
+          transitions: {
+            // Duration to fade the index overlay in or out (if activated, see `overlay`
+            // attribute of the index settings above).
+            fadeInIndexOverlay:             500,
+            fadeOutIndexOverlay:            500,
+
+            // Duration to fade the *index module* in or out by calling the
+            // `open()` or `close()` functions.
+            fadeInIndex:                    500,
+            fadeOutIndex:                   500,
+
+            // Duration to fade in a index item once the img or thumb has been loaded.
+            fadeInIndexItemLoaded:          250,
+
+            // Duration to fade the lightbox overlay in or out (if activated, see `overlay`
+            // attribute of the lightbox settings above).
+            fadeInLightboxOverlay:          500,
+            fadeOutLightboxOverlay:         500,
+
+            // Duration to fade the *lightbox module* in or out by calling the
+            // `open()` or `close()` functions.
+            fadeInLightbox:                 500,
+            fadeOutLightbox:                500,
+
+            // Duration to fade in a lightbox item once the img has been loaded.
+            fadeInLightboxItemLoaded:       250,
+
+            // Duration for the transition from prev image to the next in the lightbox
+            fadeLightboxItem:               250
+          }
+
+        },
+
+        // Initialisation
+        // ==============
+
+        // Init Method
+        // -----------
+        // **Private method** which is executed initially, when an
+        // `options` object is provided as the first argument of the
+        // plugin call.
+        _init: function(options, cb) {
+
+          var self = this;
+
+          if (this.initPlugin) {
+            self._debug("error", "The plugin has already been " +
+              "initialized!");
+
+            return false;
+          }
+
+          // Merge user defined `options` with default `settings`.
+          this.options = $.extend(true, {}, this.settings, options);
+
+          if (!this.options.index.enabled &&
+              !this.options.lightbox.enabled) {
+
+            self._debug("error", "Neither the index module, nor the " +
+              "lightbox module is enabled!");
+
+          } else {
+
+            // Create the container element, load data and execute
+            // user callback at the end.
+            this.$container = $("<div />")
+              .addClass(this.options.classNames.container);
+
+            $("body").append(this.$container);
+            this._loadData(cb);
+
+          }
+
+        },
+
+
+        // Load Data Method
+        // ----------------
+        // **Private method** that loads the data (esp. for JSON
+        // URL call), builds up the modules HTML structure and
+        // executes the callback.
+        _loadData: function(cb) {
+
+          var self = this,
+              func = function() {
+                if (self.options.index.enabled) {
+                  self._tmplIndex();
+                }
+
+                if (self.options.lightbox.enabled) {
+                  self._tmplLightbox();
+                }
+
+                self.initPlugin = true;
+                self._loadDecks(cb);
+                self._bind();
+
+                return true;
+              };
+
+
+          if (this.options.api !== null) {
+
+            $.ajax({
+              type:     "GET",
+              dataType: "json",
+              url:       this.options.api,
+              success:  function(json) {
+                self._debug("info", "Inserted JSON Stream: ");
+                self._debug("info", json);
+
+                self.options.data = self._normalizeData(json);
+                func();
+              },
+              error: function(bug) {
+                self._debug("error", "JSON Error occured!");
+                self._debug("error", bug);
+
+                return false;
+              }
+            });
+
+          } else if (this.options.data.length > 0) {
+
+            this.options.data = this._normalizeData(this.options.data);
+            func();
+
+          } else {
+
+            this._debug("error", "The data could not be loaded!");
+
+          }
+
+        },
+
+
+        // Normalize Data Method
+        // ---------------------
+        // **Private method** used to normalize incoming data, by removing
+        // empty or wrongly defined decks and calculating the items image ratios.
+        _normalizeData: function(data) {
+
+          var i = 0, j = 0, k = 0,
+              totalDecks  = data.length,
+              totalItems  = 0,
+              deck        = null,
+              item        = null,
+              removeDecks = [],
+              removeItems = [];
+
+          for (i; i < totalDecks; i++) {
+
+            deck = data[i];
+
+            if (typeof deck.id === "undefined" ||
+                typeof deck.items === "undefined" ||
+                deck.items.length === 0) {
+
+              removeDecks.push(i);
+
+            } else {
+
+              removeItems = [];
+              totalItems = deck.items.length;
+
+              for (j = 0; j < totalItems; j++) {
+
+                item = deck.items[j];
+
+                if (typeof item.img    !== "undefined" &&
+                    typeof item.width  !== "undefined" &&
+                    typeof item.height !== "undefined") {
+
+                  item.ratio  = item.height / item.width;
+                  item.loaded = false;
+
+                  if (typeof item.thumb !== "undefined" &&
+                      item.thumb !== null) {
+                    item.thumbloaded = false;
+                  } else {
+                    item.thumbloaded = "same";
+                  }
+
+                } else {
+
+                  removeItems.push(j);
+
+                }
+
+              }
+
+              // All items have to be removed, therefore remove the whole deck.
+              if (removeItems.length === deck.items.length) {
+
+                removeDecks.push(i);
+
+              // Just remove the badly defined items.
+              } else {
+
+                removeItems.reverse();
+                for (k = 0; k < removeItems.length; k++) {
+                  deck.items.splice(removeItems[k], 1);
+                }
+
+              }
+
+            }
+
+          }
+
+          // Remove the wrongly defined decks.
+          removeDecks.reverse();
+
+          for (k = 0; k < removeDecks.length; k++) {
+            data.splice(removeDecks[k], 1);
+          }
+
+          return data;
+
+        },
+
+
+        // Load Decks Method
+        // -----------------
+        // **Private method** to load the decks and build up their
+        // HTML structure.
+        _loadDecks: function(cb) {
+
+          var decks = this.options.data,
+              totalDecks = decks.length,
+              i = 0;
+
+          cb = typeof cb === "function" ? cb : false;
+
+          // Append decks to *index module*.
+          if (this.options.index.enabled) {
+
+            for (i = 0; i < totalDecks; i++) {
+              this.$indexDecksContainer.append(
+                this._tmplIndexDeck(decks[i])
+              );
+
+            }
+
+            this._resizeIndex("all");
+            this._createMasonry();
+
+          }
+
+          // Append decks to *lightbox module*.
+          if (this.options.lightbox.enabled) {
+
+            for (i = 0; i < totalDecks; i++) {
+              this.$lightboxDecksContainer.append(
+                this._tmplLightboxDeck(decks[i])
+              );
+            }
+
+          }
+
+          // Initially set deck to the first one.
+          this._setDeck(false);
+          this._bindClicks();
+          this._hashListener();
+
+          if (cb) {
+            cb();
+          }
+
+          if (typeof this.options.callbacks.loaded === "function") {
+            this.options.callbacks.loaded();
+          }
+
+        },
+
+
+        _loadImgs: function(module) {
+
+          var self        = this,
+              $indicators = null,
+              classNames  = this.options.classNames,
+              transitions = this.options.transitions,
+              loader = function(item, $img, $indicator, module, mode, src) {
+
+                $indicator.after($img);
+                $indicator.hide();
+
+                if (typeof Modernizr !== "undefined" &&
+                    Modernizr.csstransitions) {
+                  $img.addClass("loaded");
+                } else {
+                  $img.fadeIn(transitions["fadeIn" + self._capitalize(module) + "ItemLoaded"]);
+                }
+
+                if (mode === 1) {
+
+                  item.thumbloaded = true;
+                  item.loaded = true;
+                  self._debug("info", "Loading image: " + src);
+
+                } else if (mode === 2) {
+
+                  item.thumbloaded = true;
+                  self._debug("info", "Loading thumb image: " + src);
+
+                } else if (mode === 3) {
+
+                  item.loaded = true;
+                  self._debug("info", "Loading image: " + src);
+
+                }
+
+              };
+
+
+          if (this.options[module].enabled) {
+
+            $indicators = this["$" + module + "DecksContainer"]
+              .find("#" + classNames[module + "Deck"] +
+                    "-" + this.currentDeck.id + " " +
+                    "." + classNames[module + "ItemIndicator"]);
+
+
+            if (module === "index") {
+
+              $.each(this.currentDeck.items, function(i, item) {
+
+                var $indicator = $indicators.eq(i),
+                    $img = $("<img />"),
+                    src;
+
+                // Do not load again when already in the loading queue.
+                if (item.thumbloaded === "loading") {
+                  return false;
+                }
+
+
+                if (item.thumbloaded === "same") {
+
+                  src = self.options.baseImgPath + item.img;
+
+                  if (item.loaded === true) {
+
+                    $indicator.after($img.attr("src", src));
+                    $indicator.hide();
+
+                    if (typeof Modernizr !== "undefined" &&
+                        Modernizr.csstransitions) {
+                      $img.addClass("loaded");
+                    } else {
+                      $img.fadeIn(transitions.fadeInIndexItemLoaded);
+                    }
+
+                    item.thumbloaded = true;
+
+                    self._debug("info", "Appended already loaded image: " + src);
+
+                  } else {
+
+                    item.thumbloaded = "loading";
+                    $img.one("load", function() {
+                      loader(item, $img, $indicator, "index", 1, src);
+                    }).attr("src", src);
+
+                  }
+
+
+                } else if (!item.thumbloaded) {
+
+                  src = self.options.baseImgPath + item.thumb;
+
+                  item.thumbloaded = "loading";
+                  $img.one("load", function() {
+                    loader(item, $img, $indicator, "index", 2, src);
+                  }).attr("src", src);
+
+                } else {
+                  return false;
+                }
+
+              });
+
+            } else if (module === "lightbox") {
+
+              $.each(this.currentDeck.items, function(i, item) {
+
+                var $indicator = $indicators.eq(i),
+                    $img = $("<img />"),
+                    src = self.options.baseImgPath + item.img;
+
+                if (item.loaded === "loading") {
+                  return false;
+                }
+
+
+                if (!item.loaded) {
+
+                  item.loaded = "loading";
+                  $img.one("load", function() {
+                    loader(item, $img, $indicator, "lightbox", 3, src);
+                  }).attr("src", src);
+
+                } else {
+
+                  if ($indicator.parent().find("img").length > 0) {
+                    return false;
+                  } else {
+
+                    $indicator.after($img.attr("src", src));
+                    $indicator.hide();
+
+                    if (typeof Modernizr !== "undefined" &&
+                        Modernizr.csstransitions) {
+                      $img.addClass("loaded");
+                    } else {
+                      $img.fadeIn(transitions.fadeInLightboxItemLoaded);
+                    }
+
+                    item.loaded = true;
+
+                    self._debug("info", "Appended already loaded image: " + src);
+                  }
+
+                }
+
+              });
+
+            }
+
+          }
+
+        },
+
+
+        // Set Deck Method
+        // ---------------
+        // **Private method** to find and set the current deck.
+        _setDeck: function(deckID) {
+
+          var found = false,
+              deck  = null,
+              decks = this.options.data,
+              totalDecks = decks.length,
+              i = 0;
+
+          if (deckID !== false) {
+
+            for (i; i < totalDecks; i++) {
+
+              deck = decks[i];
+
+              if (deck.id === deckID) {
+                found = true;
+                this.currentDeck = deck;
+                break;
+              }
+
+            }
+
+          }
+
+          // Set to first deck, if `deckID` not found.
+          if (!found) {
+            this.currentDeck  = decks[0];
+            this.currentIndex = 0;
+          }
+
+        },
+
+
+        // General Methods
+        // ===============
+
+        // Open Method
+        // -----------
+        // **Public method** to open a module or specific item of the plugin.
+        // Invoke by calling `$.ScalableLightbox("open", options, callback);`
+        // The `options` object may have the following attributes:
+        // * `module` the module that should be opened, either `"index"`
+        //    or `"lightbox"` (required)
+        // * `deck` the ID of deck that should be displayed (required)
+        // * `index` which item of the deck should be displayed, only
+        //    if the *lightbox module* is opened (optional)
+        open: function(options, cb) {
+
+          var self  = this,
+              func  = null,
+              other = "",
+              classNames  = this.options.classNames,
+              transitions = this.options.transitions;
+
+          cb = typeof cb === "function" ? cb : false;
+
+          if (this.currentBlocking) {
+            return false;
+          }
+
+          this.currentBlocking = true;
+
+          options = $.extend(true, {
+            module:   "lightbox",
+            deck:     false,
+            index:    0
+          }, options);
+
+
+          this._setDeck(options.deck);
+          this.currentIndex = options.index;
+
+          func = function() {
+
+            self["$" + options.module + "DecksContainer"]
+              .find("." + classNames[options.module + "Deck"])
+              .hide();
+
+            self["$" + options.module + "DecksContainer"]
+              .find("#" + classNames[options.module + "Deck"] +
+                    "-" + self.currentDeck.id)
+              .show();
+
+
+            self["$" + options.module + "Wrapper"]
+              .fadeIn(
+                transitions["fadeIn" + self._capitalize(options.module)],
+                function() {
+
+                  self[options.module + "State"] = "opened";
+                  self._loadImgs(options.module);
+                  self._bind();
+                  self._changeHash(options.module);
+
+                  if (options.module === "index") {
+                    self.resize();
+                  } else {
+                    self.currentBlocking = false;
+                    self.goto(options.index);
+                  }
+
+                  if (cb) {
+                    cb();
+                  } else if (typeof self.options.callbacks.open === "function") {
+                    self.options.callbacks.open();
+                  }
+
+                }
+              );
+
+              $("body").addClass(classNames.pluginActive);
+
+              self.currentBlocking = false;
+
+          };
+
+          if (options.module === "index") {
+            other = "lightbox";
+          } else {
+            other = "index";
+          }
+
+
+          // The requested module is enabled.
+          if (this.options[options.module].enabled) {
+
+            if (this[other + "State"] === "opened") {
+              this.close();
+            }
+
+            if (options.module === "index") {
+              this._resizeIndex("current");
+            }
+
+            // The opened module has a overlay.
+            if (this.options[options.module].overlay) {
+
+              this["$" + options.module + "Overlay"]
+                .fadeIn(
+                  transitions["fadeIn" + self._capitalize(options.module)  + "Overlay"],
+                  func
+                );
+
+            } else {
+
+              func();
+
+            }
+
+          } else {
+
+            this._debug("error", "The " + options.module + " module is not activated and can therefore" +
+              " not be displayed!");
+
+          }
+
+        },
+
+
+        // Close Method
+        // ------------
+        // **Public method** to close the currently opened module.
+        // Invoke by calling `$.ScalableLightbox("close", callback);`
+        close: function(cb) {
+
+          var self        = this,
+              module      = "index",
+              classNames  = this.options.classNames,
+              transitions = this.options.transitions,
+              func        = null;
+
+          cb = typeof cb === "function" ? cb : false;
+
+          if (this.lightboxState === "opened") {
+
+            module = "lightbox";
+
+          } else if (this.indexState === "closed") {
+
+            if (cb) {
+              cb();
+            }
+
+            this._debug("info", "Nothing could be closed, as " +
+              "everything is already closed.");
+
+            return;
+          }
+
+          // Unbind global events (keyboard and resize).
+          this._bind(true);
+          $("body").removeClass(classNames.pluginActive);
+
+          func = function() {
+
+            self["$" + module + "DecksContainer"]
+              .find("#" + classNames[module + "Deck"] +
+                    "-" + self.currentDeck.id)
+              .hide();
+
+            self[module + "State"] = "closed";
+            self._changeHash("close");
+
+            if (module === "lightbox") {
+
+              self.$lightboxDecksContainer.css({
+                width:       0,
+                height:      0,
+                marginLeft:  0,
+                marginTop:   0
+              });
+
+              self.$lightboxDecksContainer
+                .find("#" + classNames.lightboxDeck +
+                      "-" + self.currentDeck.id + " " +
+                      "." + classNames.lightboxItem)
+                .hide()
+                .removeClass("fadein");
+
+
+              self.$lightboxCaptionLeft.html("");
+              self.$lightboxCaptionCenter.html("");
+              self.$lightboxCaptionRight.html("");
+
+            }
+
+            if (self.prevScrollPosition.length === 2) {
+
+              window.scrollTo(
+                self.prevScrollPosition[0],
+                self.prevScrollPosition[1]
+              );
+
+              self.prevScrollPosition = [];
+            }
+
+            if (cb) {
+              cb();
+            } else if (typeof self.options.callbacks.close === "function") {
+              self.options.callbacks.close();
+            }
+
+          };
+
+
+          this["$" + module + "Wrapper"]
+            .fadeOut(
+              transitions["fadeOut" + self._capitalize(module)],
+              function() {
+
+                if (self.options[module].overlay) {
+
+                  self["$" + module + "Overlay"]
+                    .fadeOut(
+                      transitions["fadeOut" + self._capitalize(module) + "Overlay"],
+                      func
+                    );
+
+                } else {
+
+                  func();
+
+                }
+              }
+            );
+
+        },
+
+
+        // Destroy Method
+        // --------------
+        // **Public method** to destroy the markup and event bindings
+        // generated by the plugin. Invoke by calling
+        // `$.ScalableLightbox("destroy", callback);`
+        destroy: function(cb) {
+
+          cb = typeof cb === "function" ? cb : false;
+
+          // Unbind all events.
+          this._bind(true);
+
+          this._bindClicks(true);
+          this._bindIndexLink(true);
+          this._bindThumbLinks(true);
+
+
+          // Destroy masonry if it was previously embedded.
+          if ($.fn.masonry &&
+              this.options.index.layout === "masonry") {
+
+            this.$indexDecksContainer
+              .find("." + this.options.classNames.indexDeck)
+              .masonry("destroy");
+
+            this.initMasonry = false;
+          }
+
+          // Remove all divs that where constructed.
+          this.$container.remove();
+
+          // remove body tag (in case it is still present)
+          $("body").removeClass(this.options.classNames.pluginActive);
+
+
+          if (cb) {
+            cb();
+          }
+
+          this._debug("info", "Plugin has been successfully removed.");
+
+          // Destroy data and set plugin back to not initialized.
+          this.options = null;
+          this.initPlugin = false;
+
+        },
+
+
+
+        // Navigation Methods
+        // ==================
+
+        // Prev Method
+        // -----------
+        // **Public method**, for navigating to the previous
+        // item of the currently displayed lightbox. Invoke
+        // by calling `$.ScalableLightbox("prev");`
+        prev: function() {
+          this._navigateTo("prev");
+        },
+
+
+        // Next Method
+        // -----------
+        // **Public method**, for navigating to the next
+        // item of the currently displayed lightbox. Invoke
+        // by calling `$.ScalableLightbox("next");`
+        next: function() {
+          this._navigateTo("next");
+        },
+
+
+        // Goto Method
+        // -----------
+        // **Public method**, for navigating to the i-th
+        // item (starting at 0) of the currently displayed lightbox.
+        // Invoke by calling `$.ScalableLightbox("goto", index);`
+        // If the number is higher then the total items in the current
+        // deck, it navigates to the last item.
+        goto: function(index) {
+          this._navigateTo(index);
+        },
+
+
+        // Navigate To Method
+        // -----------------
+        // **Private method**, that does the heavy lifting
+        // for the previously defined, public methods.
+        _navigateTo: function(direction) {
+
+          var self = this,
+              prev = 0,
+              next = 0,
+              classNames  = this.options.classNames,
+              transitions = this.options.transitions;
+
+
+          if (this.currentBlocking) {
+            return false;
+          }
+
+          if (!this.options.lightbox.enabled) {
+            return false;
+          }
+
+          // if the lightbox is not active, no navigation method can be used
+          if (this.lightboxState !== "opened") {
+            this._debug("info", "The lightbox module has to be active (displayed) " +
+              "when using a navigation method!");
+
+            return false;
+          }
+
+          // Prevent navigation left/right if there is only one item.
+          if (typeof direction === "string" &&
+              this.currentDeck.items.length === 1) {
+            return false;
+          }
+
+          this.currentBlocking = true;
+
+          if (typeof direction === "number") {
+
+            next = direction;
+            prev = this.$lightboxDecksContainer
+              .find("#" + classNames.lightboxDeck +
+                    "-" + this.currentDeck.id + " " +
+                    "." + classNames.lightboxItem +
+                    ".fadein")
+              .index();
+
+            // if number is below zero or larger then total items
+            // go to the last item in the current deck
+            if (next >= this.currentDeck.items.length ||
+                next < 0) {
+              next = this.currentDeck.items.length - 1;
+            }
+
+            if (prev === next) {
+              prev = -1;
+            }
+
+          } else if (direction === "prev") {
+
+            next = this.currentIndex - 1;
+            prev = this.currentIndex;
+
+
+            if (next < 0) {
+              next = this.currentDeck.items.length - 1;
+              prev = 0;
+            }
+
+          } else if (direction === "next") {
+
+            next = this.currentIndex + 1;
+            prev = next - 1;
+
+            if (next === this.currentDeck.items.length) {
+              prev = this.currentDeck.items.length - 1;
+              next = 0;
+            }
+
+          }
+
+          this.currentIndex = next;
+
+          if (prev >= 0) {
+
+            this.$lightboxDecksContainer
+              .find("#" + classNames.lightboxDeck +
+                    "-" + this.currentDeck.id + " " +
+                    "." + classNames.lightboxItem)
+              .eq(prev)
+              .fadeOut(transitions.fadeLightboxItem)
+              .removeClass("fadein");
+
+          }
+
+
+          this.$lightboxDecksContainer
+            .find("#" + classNames.lightboxDeck +
+                  "-" + this.currentDeck.id + " " +
+                  "." + classNames.lightboxItem)
+            .eq(next)
+            .fadeIn(
+              transitions.fadeLightboxItem,
+              function() {
+                self.currentBlocking = false;
+              }
+            ).addClass("fadein");
+
+          this._adjustLightboxCaption();
+          this.resize();
+          this._changeHash("lightbox");
+
+        },
+
+
+        // Adjust Lightbox Caption Method
+        // ------------------------------
+        // **Private method**, for changing the lightbox captions according
+        // to current item.
+        _adjustLightboxCaption: function() {
+
+          var captions = this.options.lightbox.img;
+
+          this.$lightboxCaptionLeft.html(
+            this._getCaptionTxt("lightbox", captions.captionLeft)
+          );
+
+          this.$lightboxCaptionCenter.html(
+            this._getCaptionTxt("lightbox", captions.captionCenter)
+          );
+
+          this.$lightboxCaptionRight.html(
+            this._getCaptionTxt("lightbox", captions.captionRight)
+          );
+
+        },
+
+
+        // Get Caption Text Method
+        // -----------------------
+        // **Private method**, for getting the correct caption text
+        // displayed.
+        _getCaptionTxt: function(module, type, data, i, total) {
+
+          var txt = "", caption, thumbcaption;
+
+          if (module === "lightbox") {
+            data = this.currentDeck.items[this.currentIndex];
+          }
+
+          caption = (typeof data.caption !== "undefined") ?
+            data.caption : "";
+
+          thumbcaption = (typeof data.thumbcaption !== "undefined") ?
+            data.thumbcaption : caption;
+
+
+          switch (type) {
+          case "index":
+            // No *index module* link, if we are at the *index module* or
+            // if we are at the *lightbox module*, but the index is not
+            // enabled.
+            if (module === "index" ||
+                !this.options.index.enabled) {
+              break;
+            }
+
+            txt  = "<a href=\"#\" class=\"";
+            txt += this.options.classNames.lightboxIndexLink;
+            txt += "\">" + this.options.lightbox.img.captionIndexTxt;
+            txt += "</a>";
+
+            break;
+
+          case "number":
+            if (module === "index") {
+
+              txt = this.options.index.thumb.captionNumberFmt
+                      .replace(/%n%/gi, i + 1)
+                      .replace(/%total%/gi, total);
+
+            } else if (module === "lightbox") {
+
+              txt = this.options.lightbox.img.captionNumberFmt
+                      .replace(/%n%/gi, this.currentIndex + 1)
+                      .replace(/%total%/gi, this.currentDeck.items.length);
+
+            }
+
+            break;
+
+          case "caption":
+            txt = caption;
+
+            break;
+
+          case "thumbcaption":
+            txt = thumbcaption;
+
+            break;
+          }
+
+          return txt;
+
+        },
+
+
+        // Hash Listener Method
+        // --------------------
+        // **Private method**, that listens to the URL hash on page load
+        // and loads the corresponding *index or lightbox module*.
+        _hashListener: function() {
+
+          var regex1, regex2, match1, match2;
+
+          if (this.options.hash) {
+
+            regex1 = /#lightbox\/index\/(\d*)/;
+            regex2 = /#lightbox\/(\d*)\/(\d*)/;
+            match1 = regex1.exec(window.location.hash);
+            match2 = regex2.exec(window.location.hash);
+
+            if (match1) {
+
+              this.open({
+                module:   "index",
+                deck:     parseInt(match1[1], 10)
+              });
+
+            } else if (match2) {
+
+              this.open({
+                module:   "lightbox",
+                deck:     parseInt(match2[1], 10),
+                index:    parseInt(match2[2], 10)
+              });
+
+            }
+
+          }
+
+        },
+
+
+        // Change Hash Method
+        // ------------------
+        // **Private method**, for changing the hash of the URL according
+        // to the currently opened module.
+        _changeHash: function(module) {
+
+          if (this.options.hash) {
+
+            if (module === "index") {
+
+              window.location.hash = "#lightbox/index/" + this.currentDeck.id;
+
+            } else if (module === "lightbox") {
+
+              window.location.hash = "#lightbox/" + this.currentDeck.id + "/" +
+                this.currentIndex;
+
+            } else if (module === "close") {
+
+              window.location.hash = "";
+
+            }
+
+          }
+
+        },
+
+
+
+
+
+        // Resizing Methods
+        // ================
+
+        // Resize Method
+        // -------------
+        // **Public method** that is used to resize the plugin.
+        // Whether the *index or lightbox module* is resized, depends on
+        // what is currently active (have a look at the `indexState` and
+        // `lightboxState` properties).
+        resize: function(cb) {
+
+          var self        = this,
+              winWidth    = $(window).width(),
+              winHeight   = $(window).height(),
+              docWidth    = winWidth  -
+                ((winWidth < 451 || winHeight < 400) ?
+                  this.options.lightbox.padding.horizontalMobile :
+                  this.options.lightbox.padding.horizontal),
+              docHeight   = winHeight -
+                ((winWidth < 451 || winHeight < 400) ?
+                  this.options.lightbox.padding.verticalMobile :
+                  this.options.lightbox.padding.vertical),
+              currentImg, imgWidth, imgHeight;
+
+          cb = typeof cb === "function" ? cb : false;
+
+          // Resize the *index module*, if this module is currently active.
+          if (this.indexState === "opened") {
+
+            this._resizeIndex("current");
+
+            // inline or general resize callback
+            if (cb) {
+              cb();
+            } else if (typeof self.options.callbacks.resize === "function") {
+              self.options.callbacks.resize();
+            }
+
+            this._debug("info", "Index module has been resized.");
+
+          // Resize *lightbox module*, if it is currently active.
+          } else if (this.lightboxState === "opened") {
+
+            this.$lightboxCaptionContainer.hide();
+
+            // Obtain the current image of the deck so that everything can
+            // be resized according to its properties.
+            currentImg  = this.currentDeck.items[this.currentIndex];
+
+            if (currentImg) {
+
+              imgWidth  = currentImg.width;
+              imgHeight = currentImg.height;
+
+              // Fix for small devices and full screen mode, as `$(window).height()`
+              // calculates a *wrong value*.
+              /*if (winWidth < 360) {
+                docWidth = 280;
+
+                if (window.innerHeight > winHeight) {
+                  docHeight = window.innerHeight -
+                    this.options.lightbox.padding.vertical;
+                }
+
+                // Annoying iOS address bar (hiding or not).
+                if (self.prevScrollPosition.length === 0) {
+                  this.prevScrollPosition = [$(document).scrollLeft(), $(document).scrollTop()];
+                }
+
+                setTimeout(function() {
+                  window.scrollTo(0, 0);
+                }, 500);
+
+              }*/
+
+
+              if (imgWidth > docWidth) {
+                imgWidth  = docWidth;
+                imgHeight = imgWidth * currentImg.ratio;
+              }
+
+              if (imgHeight > docHeight) {
+                imgHeight = docHeight;
+                imgWidth  = imgHeight * 1 / currentImg.ratio;
+              }
+
+
+              this._resizeLightboxCaptions(imgWidth);
+
+              if (typeof Modernizr !== "undefined" &&
+                  Modernizr.csstransitions) {
+
+                this.$lightboxDecksContainer.css({
+                  width:         imgWidth,
+                  height:        imgHeight,
+                  marginLeft:   -imgWidth/2,
+                  marginTop:    -imgHeight/2
+                });
+                this.$lightboxCaptionContainer.show();
+
+                // inline or general resize callback
+                if (cb) {
+                  cb();
+                } else if (typeof self.options.callbacks.resize === "function") {
+                  self.options.callbacks.resize();
+                }
+
+              } else {
+
+                this.$lightboxDecksContainer.stop(true, false).animate({
+                  width:         imgWidth,
+                  height:        imgHeight,
+                  marginLeft:   -imgWidth/2,
+                  marginTop:    -imgHeight/2
+                }, this.options.transitions.fadeLightboxItem, function() {
+                  self.$lightboxCaptionContainer.show();
+
+                  // inline or general resize callback
+                  if (cb) {
+                    cb();
+                  } else if (typeof self.options.callbacks.resize === "function") {
+                    self.options.callbacks.resize();
+                  }
+
+                });
+
+              }
+
+              this._debug("info", "Lightbox module has been resized.");
+
+            } else {
+
+              this._debug("error", "The current item of the Lightbox module " +
+                "does not exist!");
+
+            }
+
+          }
+
+        },
+
+
+        // Resize Index Method
+        // -------------------
+        // **Private method** that is used to resize the *index module*.
+        // If the `layout` was set to `"masonry"` and the masonry plugin
+        // is available, it also resizes the masonry.
+        _resizeIndex: function(type) {
+
+          var self = this,
+              wrapperVisible = this.$indexWrapper.is(":visible"),
+              classNames     = this.options.classNames,
+              func           = function() {
+                  var $deck = $(this),
+                    visible = $deck.is(":visible");
+
+                if (!visible) {
+                  $deck.show();
+                }
+
+                self._resizeIndexCaptions($deck);
+
+                if ($.fn.masonry && self.options.index.layout === "masonry" &&
+                    self.initMasonry) {
+                  $deck.masonry("resize");
+                }
+
+                if (!visible) {
+                  $deck.hide();
+                }
+              };
+
+
+          if (!wrapperVisible) {
+            this.$indexWrapper.show();
+          }
+
+
+          if (type === "all") {
+
+            this.$indexDecksContainer
+              .find("." + classNames.indexDeck)
+              .each(func);
+
+          } else if (type === "current") {
+
+            this.$indexDecksContainer
+              .find("#" + classNames.indexDeck + "-" + this.currentDeck.id)
+              .each(func);
+
+          }
+
+
+          if (!wrapperVisible) {
+            this.$indexWrapper.hide();
+          }
+
+        },
+
+
+        // Resize Index Captions
+        // ---------------------
+        // **Private method** that adjusts the index thumb captions
+        // according to the defined position.
+        _resizeIndexCaptions: function($deck) {
+
+          var self = this,
+              position   = this.options.index.thumb.captionPosition,
+              classNames = this.options.classNames;
+
+
+          if (position === "above") {
+
+            $deck
+              .find("." + classNames.indexItem)
+              .each(function() {
+
+                var $me      = $(this),
+                    $caption = $me.find("." + classNames.indexItemCaption),
+                    height   = $caption.height() + self.options.index.thumb.captionVerticalMargin;
+
+
+                $me.css("marginTop", "");
+                $me.css({ "marginTop": parseInt($me.css("marginTop")) + height });
+                $caption.css({ "top": - height });
+
+              });
+
+          } else if (position === "center") {
+
+            $deck
+              .find("." + classNames.indexItemCaption)
+              .each(function() {
+
+                var $me = $(this);
+                $me.css({ "marginTop": - $me.height() / 2 });
+
+              });
+
+          } else if (position === "below") {
+
+            $deck
+              .find("." + classNames.indexItem)
+              .each(function() {
+
+                var $me      = $(this),
+                    $caption = $me.find("." + classNames.indexItemCaption),
+                    height   = $caption.height() + self.options.index.thumb.captionVerticalMargin;
+
+
+                $me.css("marginBottom", "");
+                $me.css({ "marginBottom": parseInt($me.css("marginBottom")) + height });
+                $caption.css({ "bottom": - height });
+
+              });
+
+          }
+
+        },
+
+
+        // Resize Lightbox Captions
+        // ------------------------
+        // **Private method** that adjusts the lightbox captions
+        // according to the defined position.
+        _resizeLightboxCaptions: function(imgWidth) {
+
+          var position       = this.options.lightbox.img.captionPosition,
+              verticalMargin = this.options.lightbox.img.captionVerticalMargin,
+              captionHeight, diffHeight;
+
+          this.$lightboxCaptionContainer
+            .css({ "width": imgWidth })
+            .show();
+
+          this.$lightboxCaptionLeft.css("height", "auto");
+          this.$lightboxCaptionCenter.css("height", "auto");
+          this.$lightboxCaptionRight.css("height", "auto");
+
+          captionHeight = Math.max(
+            this.$lightboxCaptionLeft.height(),
+            this.$lightboxCaptionCenter.height(),
+            this.$lightboxCaptionRight.height()
+          );
+
+          this.$lightboxCaptionLeft.css("height", "100%");
+          this.$lightboxCaptionCenter.css("height", "100%");
+          this.$lightboxCaptionRight.css("height", "100%");
+
+
+          if (position === "above" || position === "below") {
+
+            diffHeight = (captionHeight + 2 * verticalMargin) -
+              (this.options.lightbox.padding.vertical / 2);
+
+            if (diffHeight > 0) {
+              captionHeight -= diffHeight;
+            }
+
+          }
+
+          if (position === "above") {
+
+            this.$lightboxCaptionContainer
+              .css({ "top": - (captionHeight + verticalMargin) });
+
+          } else if (position === "center") {
+
+            this.$lightboxCaptionContainer
+              .css({ "marginTop": - captionHeight / 2 });
+
+          } else if (position === "below") {
+
+            this.$lightboxCaptionContainer
+              .css({ "bottom": - (captionHeight + verticalMargin) });
+
+          }
+
+
+          this.$lightboxCaptionContainer
+            .css({ "width": "", "height": captionHeight })
+            .hide();
+
+        },
+
+
+        // Binding Methods
+        // ===============
+
+        // Bind Method
+        // -----------
+        // **Private method**, wrapper for event binding which has to be
+        // deactivated when the plugin is closed again.
+        _bind: function(unbind) {
+
+          unbind = (typeof unbind === "undefined") ? false : unbind;
+
+          this._bindKeys(unbind);
+          this._bindResize(unbind);
+          this._bindCaptionLinks(unbind);
+
+        },
+
+
+        // Bind Keys Method
+        // ----------------
+        // **Private method**, for binding keyboard events.
+        _bindKeys: function(unbind) {
+
+          var self = this;
+
+          if (unbind) {
+
+            if ((this.options.index.enabled &&
+                 this.options.index.controls.close) ||
+                (this.options.lightbox.enabled &&
+                 this.options.lightbox.controls.keys)) {
+
+              $(window.document).unbind("keydown.scalableLightbox.navi");
+              $(window.document).unbind("keydown.scalableLightbox.close");
+
+              this._debug("info", "Unbinding keyboard events.");
+              this.binded.keys = false;
+
+            }
+
+          } else if (!this.binded.keys) {
+
+            if ((this.options.lightbox.enabled &&
+                 this.options.lightbox.controls.keys)) {
+
+              $(window.document)
+                .bind("keydown.scalableLightbox.navi", function(event) {
+
+                  switch (event.keyCode) {
+
+                  case 37: // left arrow
+                    if (self.lightboxState === "opened") {
+                      self.prev();
+                    }
+                    break;
+
+                  case 39: // right arrow
+                    if (self.lightboxState === "opened") {
+                      self.next();
+                    }
+                    break;
+
+                  }
+
+                });
+
+            }
+
+
+            if ((this.options.index.enabled &&
+                 this.options.index.controls.keys) ||
+                (this.options.lightbox.enabled &&
+                 this.options.lightbox.controls.keys)) {
+
+              $(window.document)
+                .bind("keydown.scalableLightbox.close", function(event) {
+
+                  switch (event.keyCode) {
+
+                  case 27: // esc btn
+                    if ((self.indexState === "opened" &&
+                         self.options.index.controls.close) ||
+                        (self.lightboxState === "opened" &&
+                         self.options.lightbox.controls.close)) {
+
+                      self.close();
+                    }
+                    break;
+
+                  }
+
+                });
+
+              this._debug("info", "Binded key events.");
+              this.binded.keys = true;
+
+            }
+
+          }
+
+        },
+
+
+        // Bind Resize Method
+        // ------------------
+        // **Private method**, for binding the window resize event.
+        _bindResize: function(unbind) {
+
+          var self    = this,
+              defined = false,
+              resizeTimeout;
+
+          if (unbind) {
+
+            // Unbind regular resize or `"smartresize"`.
+            if (this.options.resize) {
+
+              $(window).unbind("resize.scalableLightbox");
+              this._debug("info", "Unbinding resize event.");
+              this.binded.resize = false;
+
+            }
+
+          } else if (!this.binded.resize) {
+
+            if (this.options.resize === "smartresize") {
+
+              $(window).bind("resize.scalableLightbox", function() {
+
+                if (resizeTimeout) {
+                  clearTimeout(resizeTimeout);
+                }
+
+                resizeTimeout = setTimeout(function() {
+                  self.resize();
+                }, 200);
+              });
+
+              defined = true;
+
+            } else if (this.options.resize) {
+
+              $(window).bind("resize.scalableLightbox", function() {
+                self.resize();
+              });
+
+              defined = true;
+
+            }
+
+            if (defined) {
+
+              this.binded.resize = true;
+              this._debug("info", "Binded resize event.");
+
+            }
+
+          }
+
+        },
+
+
+        // Bind Click Method
+        // -----------------
+        // **Private method**, for binding click events.
+        _bindClicks: function(unbind) {
+
+          var self       = this,
+              defined    = false,
+              classNames = this.options.classNames,
+              funcAlt    = function() {
+
+                if (unbind) {
+
+                  if (self.options.index.enabled &&
+                      self.options.index.controls.close) {
+
+                    self.$indexWrapper
+                      .off("click.scalableLightbox.indexClose");
+
+                    defined = true;
+
+                  }
+
+
+                  if (self.options.lightbox.enabled &&
+                      self.options.lightbox.controls.close) {
+
+                    self.$lightboxWrapper
+                      .off("click.scalableLightbox.lightboxClose");
+
+                    defined = true;
+
+                  }
+
+                  if (self.options.lightbox.enabled &&
+                      self.options.lightbox.controls.clicks) {
+
+                    self.$lightboxDecksContainer
+                      .off("click.scalableLightbox.lightboxItem");
+
+                    self.$lightboxWrapper
+                      .off("click.scalableLightbox.leftCursor");
+
+                    self.$lightboxWrapper
+                      .off("click.scalableLightbox.rightCursor");
+
+                    defined = true;
+
+                  }
+
+                  if (defined) {
+
+                    self._debug("info", "Unbinding click events.");
+                    self.binded.clicks = false;
+
+                  }
+
+                } else if (!self.binded.clicks) {
+
+                  if (self.options.index.enabled &&
+                      self.options.index.controls.close) {
+
+                    self.$indexWrapper
+                      .on("click.scalableLightbox.indexClose", function() {
+                        self.close();
+                      });
+
+                    defined = true;
+
+                  }
+
+
+                  if (self.options.lightbox.enabled &&
+                      self.options.lightbox.controls.close) {
+
+                    self.$lightboxWrapper
+                      .on("click.scalableLightbox.lightboxClose", function() {
+                        self.close();
+                      });
+
+                      defined = true;
+
+                  }
+
+                  if (self.options.lightbox.enabled &&
+                      self.options.lightbox.controls.clicks) {
+
+                    self.$lightboxDecksContainer
+                      .on(
+                        "click.scalableLightbox.lightboxItem",
+                        "." + classNames.lightboxItem,
+                        function(event) {
+                          event.stopPropagation();
+                        }
+                      );
+
+                    self.$lightboxWrapper
+                      .on(
+                        "click.scalableLightbox.leftCursor",
+                        "." + classNames.lightboxCursor + ".left",
+                        function(event) {
+                          event.stopPropagation();
+                          self.prev();
+                        }
+                      );
+
+                    self.$lightboxWrapper
+                      .on(
+                        "click.scalableLightbox.rightCursor",
+                        "." + classNames.lightboxCursor + ".right",
+                        function(event) {
+                          event.stopPropagation();
+                          self.next();
+                        }
+                      );
+
+                    defined = true;
+
+                  }
+
+                  if (defined) {
+
+                    self._debug("info", "Binded click events.");
+                    self.binded.clicks = true;
+
+                  }
+
+                }
+
+              };
+
+
+          if (typeof window.define === "function" && window.define.amd &&
+              typeof Modernizr !== "undefined" &&
+              Modernizr.touch) {
+
+            require(["hammer"], function() {
+              self._bindTouch(unbind);
+            }, function() {
+              funcAlt();
+            });
+
+          } else if ($.fn.hammer &&
+                     typeof Modernizr !== "undefined" &&
+                     Modernizr.touch) {
+
+            this._bindTouch(unbind);
+
+          } else {
+
+            funcAlt();
+
+          }
+
+        },
+
+
+        // Bind Touch Method
+        // -----------------
+        // **Private method**, for binding touch events on the *lightbox module*
+        // (swipe left or right for displaying previous or next deck item).
+        _bindTouch: function(unbind) {
+
+          var self       = this,
+              defined    = false,
+              classNames = this.options.classNames;
+
+
+          if (unbind) {
+
+            if (this.options.index.enabled) {
+
+              if(this.options.index.controls.close) {
+
+                this.$indexWrapper
+                  .hammer()
+                  .off("tap.scalableLightbox.indexClose");
+
+              }
+
+              this.$indexWrapper
+                .hammer()
+                .off("drag.scalableLightbox.indexInner swipe.scalableLightbox.indexInner");
+
+              this.$indexWrapper
+                .hammer()
+                .off("drag.scalableLightbox.indexOuter swipe.scalableLightbox.indexOuter");
+
+              defined = true;
+
+            }
+
+            if (this.options.lightbox.enabled) {
+
+              if(this.options.lightbox.controls.close) {
+
+                this.$lightboxWrapper
+                  .hammer()
+                  .off("tap.scalableLightbox.lightboxClose");
+
+              }
+
+              this.$lightboxWrapper
+                .hammer()
+                .off("tap.scalableLightbox.leftCursor tap.scalableLightbox.rightCursor");
+
+              this.$lightboxWrapper
+                .hammer()
+                .off("drag.scalableLightbox.navi");
+
+              this.$lightboxDecksContainer
+                .hammer()
+                .off("swipe.scalableLightbox.navi");
+
+              defined = true;
+
+            }
+
+            if (defined) {
+
+              this._debug("info", "Unbinding touch events.");
+              this.binded.touch = false;
+
+            }
+
+          } else if (!this.binded.touch) {
+
+            if (this.options.index.enabled) {
+
+              if(this.options.index.controls.close) {
+
+                this.$indexWrapper
+                  .hammer()
+                  .on(
+                    "tap.scalableLightbox.indexClose",
+                    function(event) {
+                      event.gesture.preventDefault();
+                      self.close();
+                    }
+                  );
+
+              }
+
+
+              // Make index decks container scrollable.
+              this.$indexWrapper
+                .hammer()
+                .on(
+                  "drag.scalableLightbox.indexInner swipe.scalableLightbox.indexInner",
+                  "." + classNames.indexDecksContainer,
+                  function(event) {
+                    event.stopPropagation();
+                  }
+                );
+
+              // But disallow page scrolling of underlying divs in iOS.
+              this.$indexWrapper
+                .hammer()
+                .on(
+                  "drag.scalableLightbox.indexOuter swipe.scalableLightbox.indexOuter",
+                  function(event) {
+                    event.gesture.preventDefault();
+                    event.gesture.stopPropagation();
+                  }
+                );
+
+              defined = true;
+
+            }
+
+            if (this.options.lightbox.enabled) {
+
+              if(this.options.lightbox.controls.close) {
+
+                this.$lightboxWrapper
+                  .hammer()
+                  .on(
+                    "tap.scalableLightbox.lightboxClose",
+                    function(event) {
+                      event.gesture.preventDefault();
+                      self.close();
+                    }
+                  );
+
+              }
+
+              this.$lightboxWrapper
+                .hammer()
+                .on(
+                  "tap.scalableLightbox.leftCursor",
+                  "." + classNames.lightboxCursor + ".left",
+                  function(event) {
+                    event.stopPropagation();
+                    self.prev();
+                  }
+                );
+
+              this.$lightboxWrapper
+                .hammer()
+                .on(
+                  "tap.scalableLightbox.rightCursor",
+                  "." + classNames.lightboxCursor + ".right",
+                  function(event) {
+                    event.stopPropagation();
+                    self.next();
+                  }
+                );
+
+              this.$lightboxWrapper
+                .hammer()
+                .on(
+                  "drag.scalableLightbox.navi",
+                  function(event) {
+
+                    if (event.target.className === "left" ||
+                        event.target.className === "center" ||
+                        event.target.className === "right") {
+
+                      event.gesture.stopPropagation();
+
+                    } else {
+
+                      event.gesture.stopPropagation();
+                      event.gesture.preventDefault();
+
+                    }
+                  }
+                );
+
+              this.$lightboxDecksContainer
+                .hammer({ swipeVelocityX: 0.4 })
+                .on(
+                  "swipe.scalableLightbox.navi",
+                  function(event) {
+                    event.gesture.preventDefault();
+                    event.gesture.stopPropagation();
+
+                    switch (event.gesture.direction) {
+
+                    case "left":
+                      self.next();
+                      break;
+
+                    case "right":
+                      self.prev();
+                      break;
+
+                    }
+                  }
+
+                );
+
+              defined = true;
+
+            }
+
+
+            if (defined) {
+
+              this._debug("info", "Binded touch events.");
+              this.binded.touch = true;
+
+            }
+
+          }
+
+        },
+
+
+        // Bind Index Link Method
+        // ----------------------
+        // **Private method**, for binding links in the lightbox caption which
+        // navigate to the *index module*.
+        _bindIndexLink: function(unbind) {
+
+          var self       = this,
+              classNames = this.options.classNames,
+              func       = function() {
+
+                if (unbind) {
+
+                  self.$lightboxWrapper
+                    .hammer()
+                    .off("tap.scalableLightbox.indexItem");
+
+                } else {
+
+                  self.$lightboxWrapper
+                    .hammer()
+                    .on(
+                      "tap.scalableLightbox.indexItem",
+                      "a." + classNames.lightboxIndexLink,
+                      function(event) {
+                        event.stopPropagation();
+
+                        self.open({
+                          module:   "index",
+                          deck:     self.currentDeck.id
+                        });
+                      }
+                    );
+
+                }
+
+              },
+              funcAlt    = function() {
+
+                if (unbind) {
+
+                  self.$lightboxWrapper
+                    .off("click.scalableLightbox.indexItem");
+
+                } else {
+
+                  self.$lightboxWrapper
+                    .on(
+                      "click.scalableLightbox.indexItem",
+                      "a." + classNames.lightboxIndexLink,
+                      function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        self.open({
+                          module:   "index",
+                          deck:     self.currentDeck.id
+                        });
+                      }
+                    );
+
+                }
+
+              };
+
+
+          if (typeof window.define === "function" && window.define.amd &&
+              typeof Modernizr !== "undefined" &&
+              Modernizr.touch) {
+
+            require(["hammer"], function() {
+              func();
+            }, function() {
+              funcAlt();
+            });
+
+          } else if ($.fn.hammer &&
+                     typeof Modernizr !== "undefined" &&
+                     Modernizr.touch) {
+
+            func();
+
+          } else {
+
+            funcAlt();
+
+          }
+
+        },
+
+
+        // Bind Index Item Method
+        // ----------------------
+        // **Private method**, for binding links on the thumbs in the *index module*
+        // that navigate to the corresponding item in the *lightbox module*.
+        _bindThumbLinks: function(unbind) {
+
+          var self       = this,
+              classNames = this.options.classNames,
+              func       = function() {
+
+                if (unbind) {
+
+                  self.$indexWrapper
+                    .hammer()
+                    .off("tap.scalableLightbox.thumbLinks");
+
+                } else {
+
+                  self.$indexWrapper
+                    .hammer()
+                    .on(
+                      "tap.scalableLightbox.thumbLinks",
+                      "." + classNames.indexItem,
+                      function(event) {
+                        event.gesture.stopPropagation();
+
+                        if (self.options.lightbox.enabled) {
+
+                            self.open({
+                              module:   "lightbox",
+                              deck:     self.currentDeck.id,
+                              index:    $(this).index()
+                            });
+
+                        } else {
+
+                          self._debug("error", "The lightbox module cannot be opened, because it "+
+                            "is not enabled!");
+
+                        }
+                      }
+                    );
+
+                }
+
+              },
+
+              funcAlt    = function() {
+
+                if (unbind) {
+
+                  self.$indexWrapper.off("click.scalableLightbox.thumbLinks");
+
+                } else {
+
+                  self.$indexWrapper
+                    .on(
+                      "click.scalableLightbox.thumbLinks",
+                      "." + classNames.indexItem,
+                      function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        if (self.options.lightbox.enabled) {
+
+                          self.open({
+                            module:   "lightbox",
+                            deck:     self.currentDeck.id,
+                            index:    $(this).index()
+                          });
+
+                        } else {
+
+                          self._debug("error", "The lightbox module cannot be opened, because it "+
+                            "is not enabled!");
+
+                        }
+                      }
+                    );
+
+                }
+              };
+
+
+          if (typeof window.define === "function" && window.define.amd &&
+              typeof Modernizr !== "undefined" &&
+              Modernizr.touch) {
+
+            require(["hammer"], function() {
+              func();
+            }, function() {
+              funcAlt();
+            });
+
+          } else if ($.fn.hammer &&
+                     typeof Modernizr !== "undefined" &&
+                     Modernizr.touch) {
+
+            func();
+
+          } else {
+
+            funcAlt();
+
+          }
+
+        },
+
+
+        // Bind Caption Links Method
+        // -------------------------
+        // **Private method**, for binding links in caption which come from the content
+        // and should not bubble up to the parent element (closing the *index* or *lightbox module*).
+        _bindCaptionLinks: function(unbind) {
+
+          var self       = this,
+              classNames = this.options.classNames,
+              func       = function() {
+
+                if (unbind) {
+
+                  if (self.options.index.enabled) {
+
+                    self.$indexDecksContainer
+                      .hammer()
+                      .off("tap.scalableLightbox.indexCaptionLinks");
+
+                  }
+
+                  if (self.options.lightbox.enabled) {
+
+                    self.$lightboxCaptionContainer
+                      .hammer()
+                      .off("tap.scalableLightbox.lightboxCaptionLinks");
+
+                  }
+
+                } else {
+
+                  if (self.options.index.enabled) {
+
+                    self.$indexDecksContainer
+                      .hammer()
+                      .on(
+                        "tap.scalableLightbox.indexCaptionLinks",
+                        "." + classNames.indexItemCaption + " a",
+                        function(event) {
+                          event.gesture.stopPropagation();
+                        }
+                      );
+
+                  }
+
+                  if (self.options.lightbox.enabled) {
+
+                    self.$lightboxCaptionContainer
+                      .hammer()
+                      .on(
+                        "tap.scalableLightbox.lightboxCaptionLinks",
+                        "a:not(." + classNames.lightboxIndexLink + ")",
+                        function(event) {
+                          event.gesture.stopPropagation();
+                        }
+                      );
+
+                  }
+
+                }
+
+              },
+              funcAlt    = function() {
+
+                if (unbind) {
+
+                  if (self.options.index.enabled) {
+                    self.$indexDecksContainer
+                      .off("click.scalableLightbox.indexCaptionLinks");
+                  }
+
+                  if (self.options.lightbox.enabled) {
+                    self.$lightboxCaptionContainer
+                      .off("click.scalableLightbox.lightboxCaptionLinks");
+                  }
+
+                } else {
+
+                  if (self.options.index.enabled) {
+
+                    self.$indexDecksContainer
+                      .on(
+                        "click.scalableLightbox.indexCaptionLinks",
+                        "." + classNames.indexItemCaption + " a",
+                        function(event) {
+                          event.stopPropagation();
+                        }
+                      );
+
+                  }
+
+                  if (self.options.lightbox.enabled) {
+
+                    self.$lightboxCaptionContainer
+                      .on(
+                        "click.scalableLightbox.lightboxCaptionLinks",
+                        "a:not(." + classNames.lightboxIndexLink + ")",
+                        function(event) {
+                          event.stopPropagation();
+                        }
+                      );
+
+                  }
+
+                }
+
+              };
+
+          if (typeof window.define === "function" && window.define.amd &&
+              typeof Modernizr !== "undefined" &&
+              Modernizr.touch) {
+
+            require(["hammer"], function() {
+              func();
+            }, function() {
+              funcAlt();
+            });
+
+          } else if ($.fn.hammer &&
+                     typeof Modernizr !== "undefined" &&
+                     Modernizr.touch) {
+
+            func();
+
+          } else {
+
+            funcAlt();
+
+          }
+        },
+
+
+
+        // Template Methods
+        // ================
+
+        // Index Template
+        // --------------
+        // **Private method**, which creates the *index module* markup.
+        _tmplIndex: function() {
+
+          var classNames = this.options.classNames;
+
+          // Add the index overlay div, if activated.
+          if (this.options.index.overlay) {
+
+            this.$indexOverlay = $("<div />")
+              .addClass(classNames.indexOverlay);
+
+            this.$container.append(this.$indexOverlay);
+
+          }
+
+          // Create index wrapper element.
+          this.$indexWrapper = $("<div />")
+            .addClass(classNames.indexWrapper);
+
+          // Append decks container element to the index wrapper.
+          this.$indexDecksContainer = $("<div />")
+            .addClass(classNames.indexDecksContainer);
+
+          if (this.options.index.layout === "float") {
+            this.$indexDecksContainer
+              .addClass(classNames.clearfix);
+          }
+
+          this.$indexWrapper.append(this.$indexDecksContainer);
+
+          // Add everything to plugin's container element.
+          this.$container.append(this.$indexWrapper);
+
+          // Bind event delegation for links on the thumbnails.
+          this._bindThumbLinks();
+
+        },
+
+
+        // Index Deck Template
+        // -------------------
+        // **Private method**, which creates a `deck` for the *index module*.
+        _tmplIndexDeck: function(deck) {
+
+          var classNames   = this.options.classNames,
+              $div         = $("<div class=\"" + classNames.indexDeck + "\" " +
+                               "id=\"" +classNames.indexDeck + "-" + deck.id + "\"></div>"),
+              i = 0, total = deck.items.length;
+
+          for (i; i < total; i++) {
+            $div.append(this._tmplIndexItem(deck.items[i], i, total));
+          }
+
+          return $div;
+
+        },
+
+
+        // Index Item Template
+        // -------------------
+        // **Private method**, which adds an item to a `deck` of the *index module*.
+        _tmplIndexItem: function(item, i, total) {
+
+          var position   = this.options.index.thumb.captionPosition,
+              classNames = this.options.classNames,
+              $html      = $("<div class=\"" + classNames.indexItem + "\">" +
+                "<div class=\"" + classNames.indexItemOverlay + "\"></div>" +
+                "<div class=\"" + classNames.indexItemImg + "\">" +
+                  "<div class=\"" + classNames.indexItemIndicator + "\"></div>" +
+                "</div>" +
+                "<div class=\"" + classNames.indexItemCaption + "\">" +
+                  "<div class=\"" + classNames.indexItemCaptionInner + "\"></div>" +
+                "</div>" +
+              "</div>");
+
+
+          if (!this.options.index.thumb.overlay) {
+            $html.find("." + classNames.indexItemOverlay).remove();
+          }
+
+          if (position === "top" || position === "center" || position === "bottom") {
+            $html.find("." + classNames.indexItemCaption).addClass(position);
+          }
+
+          $html.find("." + classNames.indexItemCaptionInner).html(
+            this._getCaptionTxt(
+              "index",
+              this.options.index.thumb.caption,
+              item,
+              i,
+              total
+            )
+          );
+
+          $html.css({
+            "height": this.options.index.thumb.width * item.ratio,
+            "width":  this.options.index.thumb.width
+          });
+
+          return $html;
+
+        },
+
+
+        // Lightbox Template
+        // -----------------
+        // **Private method**, which creates the *lightbox module* markup.
+        _tmplLightbox: function() {
+
+          var position   = this.options.lightbox.img.captionPosition,
+              classNames = this.options.classNames,
+              $cursorLeft, $cursorRight;
+
+          // Add the lightbox overlay, if activated.
+          if (this.options.lightbox.overlay) {
+
+            this.$lightboxOverlay = $("<div />")
+              .addClass(classNames.lightboxOverlay);
+
+            this.$container.append(this.$lightboxOverlay);
+
+          }
+
+          // Create lightbox wrapper element.
+          this.$lightboxWrapper = $("<div />")
+            .addClass(classNames.lightboxWrapper);
+
+          // Append decks container element to the lightbox wrapper.
+          this.$lightboxDecksContainer = $("<div />")
+            .addClass(classNames.lightboxDecksContainer);
+
+          this.$lightboxWrapper.append(this.$lightboxDecksContainer);
+
+
+          // Add markup for click events (cursors), if enabled.
+          if (this.options.lightbox.controls.clicks) {
+
+            $cursorLeft = $("<div />")
+              .addClass(classNames.lightboxCursor)
+              .addClass("left");
+
+            $cursorRight = $("<div />")
+              .addClass(classNames.lightboxCursor)
+              .addClass("right");
+
+
+            this.$lightboxDecksContainer.append($cursorLeft);
+            this.$lightboxDecksContainer.append($cursorRight);
+
+          }
+
+
+          // Append caption (left, center, right)
+          this.$lightboxCaptionContainer = $("<div />")
+            .addClass(classNames.lightboxItemCaptionContainer);
+
+          if (position === "top" || position === "center" || position === "bottom") {
+            this.$lightboxCaptionContainer.addClass(position);
+          }
+
+
+          this.$lightboxCaptionLeft   = $("<div />").addClass("left");
+          this.$lightboxCaptionCenter = $("<div />").addClass("center");
+          this.$lightboxCaptionRight  = $("<div />").addClass("right");
+
+          this.$lightboxCaptionContainer.append(this.$lightboxCaptionLeft);
+          this.$lightboxCaptionContainer.append(this.$lightboxCaptionCenter);
+          this.$lightboxCaptionContainer.append(this.$lightboxCaptionRight);
+
+          this.$lightboxDecksContainer.append(this.$lightboxCaptionContainer);
+
+          // Add everything to plugin's container element.
+          this.$container.append(this.$lightboxWrapper);
+
+          // Bind event delegation for links on the index.
+          this._bindIndexLink();
+
+        },
+
+
+        // Lightbox Deck Template
+        // ----------------------
+        // **Private method**, which creates a `deck` for the *lightbox module*.
+        _tmplLightboxDeck: function(deck) {
+
+          var classNames = this.options.classNames,
+              $div = $("<div class=\"" + classNames.lightboxDeck + "\" " +
+                       "id=\"" +classNames.lightboxDeck + "-" + deck.id + "\"></div>"),
+              i = 0, total = deck.items.length;
+
+          for (i; i < total; i++) {
+            $div.append(
+              "<div class=\"" + classNames.lightboxItem + "\">" +
+                "<div class=\"" + classNames.lightboxItemIndicator + "\"></div>" +
+              "</div>"
+            );
+          }
+
+          return $div;
+
+        },
+
+
+
+        // Helper Methods
+        // ==============
+
+        // Debug Method
+        // ------------
+        // **Private method**. Internal debug method that augments
+        // the closure `_debug` function. Whether information is displayed
+        // in the browser's console, depends on `debug` setting.
+        _debug: function(type, msg) {
+
+          if (this.options.debug) {
+            _debug(type, msg);
+          }
+
+        },
+
+
+        // Capitalize Method
+        // -----------------
+        // **Private method** to capitalize first char of a string.
+        _capitalize: function(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1);
+        },
+
+
+        // Create Masonry Method
+        // ---------------------
+        // **Private method** to create a masonry if `layout` of the
+        // *index module* settings is set to `masonry` and the masonry
+        // plugin is present.
+        _createMasonry: function() {
+
+          var self = this,
+              classNames = this.options.classNames,
+              func = function() {
+                self.$indexDecksContainer
+                  .find("." + classNames.indexDeck)
+                  .addClass("masonry")
+                  .masonry({
+                    itemSelector:   "." + classNames.indexItem,
+                    isFitWidth:     true,
+                    isResizable:    false
+                  });
+
+                self.initMasonry = true;
+              };
+
+          if (typeof window.define === "function" && window.define.amd) {
+
+            require(["masonry"], function() {
+              func();
+            }, function() {
+              self._debug("error", "Masonry is activated, however the " +
+              "jQuery Masonry plugin via requirejs is missing!");
+            });
+
+          } else if ($.fn.masonry &&
+              this.options.index.layout === "masonry") {
+
+            func();
+
+          } else if (this.options.index.layout === "masonry") {
+
+            this._debug("error", "Masonry is activated, however the " +
+              "jQuery Masonry plugin is missing!");
+
+          }
+
+        }
+      };
+
+      $.data(document.body, "ScalableLightbox", instance);
+    }
+
+
+    // Plugin Bridge
+    // =============
+
+    // Method Call
+    // -----------
+    // Check if the called method is available and that it is not a private method.
+    if (typeof options === "string") {
+
+      args = Array.prototype.slice.call(arguments, 1);
+
+
+      if (!$.isFunction(instance[options]) || options.charAt(0) === "_") {
+
+        _debug("error", "No such method '" + options + "' exists!");
+
+      } else {
+
+        if (instance.initPlugin) {
+          return instance[options].apply(instance, args);
+        } else {
+          _debug("error", "Method '" + options + "' called prior to plugin initialization!");
+        }
+
+
+      }
+
+    // Initial Call
+    // -----------
+    // In case the options parameter is an object, it is passed to the `_init` function.
+    } else {
+
+      return instance._init(
+        options, (typeof arguments[1] !== "undefined") ? arguments[1] : false
+      );
+
+    }
+
+  };
+
+}));

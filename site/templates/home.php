@@ -12,7 +12,21 @@
       </div>
     <?php endforeach ?>
   </div>
-  <?php snippet('panel', array('title' => 'About')) ?>
+
+  <?php foreach($pages->find('projects')->children() as $project): ?>
+    <div class="panel-container">
+      <div class="project panel hidden <?= $project->uid() ?>">
+        <a class="close"></a>
+        <a class="panel-link" href="#">Info</a>
+        <div class="panel-content">
+          <div>
+          <?= kirbytext($project->info()) ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endforeach ?>
+
 </div>
 
 <?php snippet('scalablelightbox') ?>

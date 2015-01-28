@@ -36,8 +36,18 @@ $(function() {
 $(".menu ol li div a.<?= $page->uid() ?>").click(function(e) {
   e.preventDefault();
 
+  $('.panel.<?= $page->uid() ?>').toggleClass('hidden');
+
   $.ScalableLightbox("open", { module: "lightbox", deck: <?= $count ?> });
 });
+
+$(".sl-lightbox-wrapper").click(function(e) {
+  e.preventDefault();
+
+  $('.panel').addClass('hidden');
+
+});
+
 <?php endforeach ?>
 </script>
 

@@ -296,6 +296,7 @@
   left: 30px;
   top: 20px;
   text-align: left;
+  height:50px !important;
 }
 
 .sl-lightbox-caption-container .center {
@@ -342,6 +343,7 @@
 
 .sl-lightbox-caption-container a:hover {
   border-bottom: 1px solid #000;
+  padding-bottom: 4px
 }
 
 .sl-lightbox-cursor {

@@ -6,38 +6,39 @@ nav.menu
   left 30px
   font-size 27px
   line-height 36px
-  z-index: 1
   height 100%
+  z-index 1
 
   ol
     display table
     table-layout fixed
-    padding: 110px 0 0px
+    padding 110px 0 0 10px
     height 100%
 
     li
-      display: table-row
+      display table-row
 
       div
-        display: table-cell
+        display table-cell
         vertical-align: middle
 
         a
           color $dark
-          padding: 10px
           display block
           cursor pointer
 
           span
+            display inline-block
+
             &.name
-              display: none
+              display none
 
           &:hover
             span
               &.name
-               display: inline
+               display inline
 
               &.number
-               display: none
+               display none
 
 
