@@ -3,11 +3,19 @@
 
     $.ScalableLightbox({
       callbacks: {
-        close: function() {
+        close: function(module, id) {
           $('.panel').addClass('hidden');
+        },
+
+        open: function(module, id) {
+
+          if (module === "lightbox") {
+            $('.panel-' + id).toggleClass('hidden');
+          }
+
         }
       },
-      debug:       true,
+      debug:       false,
       hash:        true,
       baseImgPath: "content/projects/",
 
@@ -40,8 +48,6 @@
     <?php $count++; ?>
     $(".menu .rows .menu-item div a.<?= $page->uid() ?>").click(function(e) {
       e.preventDefault();
-
-      $('.panel.<?= $page->uid() ?>').toggleClass('hidden');
 
       $.ScalableLightbox("open", { module: "lightbox", deck: <?= $count ?> });
     });

@@ -16,17 +16,11 @@
     'css/styles.css'
   )) ?>
 
-  <!-- Scripts -->
-
-  <?php echo js('js/libs/jquery.js') ?>
-  <?php echo js('js/plugins/scalablelightbox.js') ?>
-  <?php echo js('js/main.js') ?>
-
   <?php echo js('js/libs/modernizr.js') ?>
 
-  <? if($page->hasImages()): ?>
-    <link rel="image_src" href="<?= $page->images()->first()->url(); ?>">
-  <? endif ?>
+  <?php if($page->hasImages()): ?>
+    <link rel="image_src" href="<?php echo $page->images()->first()->url(); ?>">
+  <?php endif ?>
 
 </head>
 
