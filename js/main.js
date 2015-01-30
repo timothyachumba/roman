@@ -29,26 +29,26 @@ $(document).ready(function() {
     $('.preview').addClass('notVisible');
   });
 
-  // function toggleAboutPanel(){
+  function toggleAboutPanel(){
 
-  //   var $panel = $('.panel.about');
+    var $panel = $('.panel.about');
 
-  //   $panel.toggleClass('active');
-  // };
+    $panel.toggleClass('active');
+  };
 
-  // function toggleProjectPanel(){
+  function toggleProjectPanel(){
 
-  //   var $panel = $('.panel.project');
+    var $panel = $('.panel.project');
 
-  //   $panel.toggleClass('active');
-  // };
+    $panel.toggleClass('active');
+  };
 
-  // function hideProjectPanel(){
+  function hideProjectPanel(){
 
-  //   var $panel = $('.panel');
+    var $panel = $('.panel');
 
-  //   $panel.toggleClass('hidden');
-  // };
+    $panel.toggleClass('hidden');
+  };
 
   // $(".panel.about .panel-link").click(function() {
   //   toggleAboutPanel();
@@ -58,12 +58,12 @@ $(document).ready(function() {
   //   toggleAboutPanel();
   // });
 
-  // $(".panel.project .panel-link").click(function() {
-  //   toggleProjectPanel();
-  // });
+  $(".panel.project .panel-link").click(function() {
+    toggleProjectPanel();
+  });
 
-  // $(".panel.project .close").click(function() {
-  //   toggleProjectPanel();
-  // });
+  $(".panel.project .close").click(function() {
+    toggleProjectPanel();
+  });
 
 });
