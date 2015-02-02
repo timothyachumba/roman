@@ -60,10 +60,9 @@
   width: 880px;
   height: 100%;
   display: none;
-  -webkit-column-count: 3;
-  -webkit-column-gap: 0px;
-  column-count: 3;
-  column-gap: 0px;
+  -webkit-column-width: 290px;
+  -moz-column-width: 290px;
+  column-width: 290px;
   font-size: 0;
 }
 
@@ -77,6 +76,8 @@
   cursor: pointer;
   height: auto !important;
   margin-bottom: 15px !important;
+  padding: 10px 10px 0;
+  width: 100% !important;
 }
 
 .sl-index-item-indicator {

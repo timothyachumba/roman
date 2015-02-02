@@ -15,7 +15,7 @@
   padding 30px 50px 100px 30px
   transform translateX(100%)
   transition all 500ms ease
-  background-color rgba(white,0.8)
+  background-color rgba(#ddd,1)
   z-index 100000000000
   display none
 
@@ -25,7 +25,7 @@
 
     .panel-link
       opacity: 1
-      transition all 500ms 800ms ease
+      transition transform 500ms 0ms ease, opacity 500ms 1000ms ease
 
       &.notVisible
         opacity 0
@@ -34,7 +34,7 @@
     transform translateX(0)
 
     .panel-link
-      transform translateX(0)
+      transform translateX(0) !important
 
     p
       transform translateX(0)
@@ -55,7 +55,7 @@
     margin-bottom 50px
     display inline-block
     transform translateX(-140px)
-    transition all 500ms ease
+    transition transform 500ms ease
     cursor pointer
 
   .close
@@ -89,3 +89,21 @@
     margin-bottom 20px
     transition all 500ms ease
     opacity: 0
+
+@media $media-mobile
+  .panel
+    width 100%
+    padding 20px 20px 60px 30px
+
+    &.about
+      .panel-link
+        transform translateX(-70px)
+
+    .panel-link
+      font-size 24px
+      line-height 30px
+      transform translateX(-90px)
+      text-align: right
+
+      .justMobile
+        display: none

@@ -28,7 +28,7 @@
     <?php endforeach ?>
     <div class="project panel about">
       <a class="close"></a>
-      <a class="panel-link" href="#">About</a>
+      <a class="panel-link" href="#">A<span class="justMobile">bout</span></a>
       <div class="panel-content">
         <div>
         <?= kirbytext($page->about()) ?>
