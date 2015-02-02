@@ -14,8 +14,11 @@ $(document).ready(function() {
     if (!$target.hasClass('project-link')) {
       $target = $target.closest('.project-link');
     }
-    $('.preview').addClass('notVisible');
-    $('.preview#' + elementId).removeClass('notVisible');
+    if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+      $('.preview').addClass('notVisible');
+      $('.preview#' + elementId).removeClass('notVisible');
+    }
+
 
   });
 
