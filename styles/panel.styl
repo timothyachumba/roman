@@ -1,3 +1,10 @@
+@keyframes fade
+  0%
+    opacity 0
+
+  100%
+    opacity 1
+
 .panel
   position: absolute
   top 0
@@ -10,6 +17,18 @@
   transition all 500ms ease
   background-color rgba(white,0.8)
   z-index 100000000000
+  display none
+
+  &.about
+    z-index 10
+    display block
+
+    .panel-link
+      opacity: 1
+      transition all 500ms 800ms ease
+
+      &.notVisible
+        opacity 0
 
   &.active
     transform translateX(0)

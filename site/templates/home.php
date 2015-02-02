@@ -12,11 +12,11 @@
     <?php endforeach ?>
   </div>
 
-  <?php $count = 0; ?>
-  <?php foreach($pages->find('projects')->children() as $project): ?>
-    <?php $count++; ?>
-    <div class="panel-container">
-      <div class="project panel hidden panel-<?php echo $count; ?>">
+  <div class="panel-container">
+    <?php $count = 0; ?>
+    <?php foreach($pages->find('projects')->children() as $project): ?>
+      <?php $count++; ?>
+      <div class="project inner panel panel-<?php echo $count; ?>">
         <a class="close"></a>
         <a class="panel-link" href="#">Info</a>
         <div class="panel-content">
@@ -25,7 +25,16 @@
           </div>
         </div>
       </div>
+    <?php endforeach ?>
+    <div class="project panel about">
+      <a class="close"></a>
+      <a class="panel-link" href="#">About</a>
+      <div class="panel-content">
+        <div>
+        <?= kirbytext($page->about()) ?>
+        </div>
+      </div>
     </div>
-  <?php endforeach ?>
+  </div>
 
 <?php snippet('footer') ?>

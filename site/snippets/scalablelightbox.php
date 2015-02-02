@@ -4,14 +4,16 @@
     $.ScalableLightbox({
       callbacks: {
         close: function(module, id) {
-          $('.panel').addClass('hidden');
+          $('.panel.inner').fadeOut("slow");
+          $('.panel.about .panel-link').removeClass('notVisible');
         },
 
         open: function(module, id) {
 
           if (module === "lightbox") {
-            $('.panel-' + id).toggleClass('hidden');
+            $('.panel-' + id).fadeIn("slow");
           }
+          $('.panel.about .panel-link').addClass('notVisible');
 
         }
       },
