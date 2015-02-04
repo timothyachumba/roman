@@ -112,8 +112,8 @@
   opacity: 0.6;
 }
 
-.touch .sl-index-item:hover .sl-index-item-overlay {
-  display: none !important;
+.touch .sl-index-item:hover  {
+  opacity: 1.0;
 }
 
 .sl-index-item-img {
