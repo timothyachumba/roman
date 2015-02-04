@@ -1,6 +1,6 @@
 <?php if(!defined('KIRBY')) exit ?>
 
-# home blueprint
+# project blueprint
 
 title: Page
 pages: true
@@ -9,6 +9,6 @@ fields:
   title:
     label: Title
     type:  text
-  about:
-    label: About
+  info:
+    label: Info
     type:  text
