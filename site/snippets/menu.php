@@ -1,7 +1,7 @@
 <nav class="menu">
   <div class="rows">
     <?php $count = 0; ?>
-    <?php foreach($pages->find('projects')->children() as $project): ?>
+    <?php foreach($pages->find('projects')->children()->visible() as $project): ?>
       <?php $count++; ?>
       <div class="menu-item">
         <div>

@@ -23,7 +23,7 @@
 
       data: [
         <?php $count = 0; ?>
-        <?php foreach($pages->children() as $page): ?>
+        <?php foreach($pages->children()->visible() as $page): ?>
           <?php $count++; ?>
         {
           id: <?= $count ?>,
@@ -45,7 +45,7 @@
 
   <?php $count = 0; ?>
 
-  <?php foreach($pages->children() as $page): ?>
+  <?php foreach($pages->children()->visible() as $page): ?>
 
     <?php $count++; ?>
     $(".menu .rows .menu-item div a.<?= $page->uid() ?>").click(function(e) {

@@ -11,4 +11,4 @@ fields:
     type:  text
   about:
     label: About
-    type:  text
+    type:  textarea

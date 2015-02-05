@@ -7,14 +7,14 @@
   <?php snippet('menu') ?>
 
   <div class="previews">
-    <?php foreach($pages->find('projects')->children() as $project): ?>
+    <?php foreach($pages->find('projects')->children()->visible() as $project): ?>
       <div class="preview notVisible" style="background-image: url(<?= $project->images()->first()->url(); ?>)" id="<?= $project->uid() ?>"></div>
     <?php endforeach ?>
   </div>
 
   <div class="panel-container">
     <?php $count = 0; ?>
-    <?php foreach($pages->find('projects')->children() as $project): ?>
+    <?php foreach($pages->find('projects')->children()->visible() as $project): ?>
       <?php $count++; ?>
       <div class="project inner panel panel-<?php echo $count; ?>">
         <a class="close"></a>

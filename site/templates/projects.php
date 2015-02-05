@@ -5,7 +5,7 @@
   </header>
   <?php snippet('menu') ?>
   <div class="previews">
-    <?php foreach($pages->find('projects')->children() as $project): ?>
+    <?php foreach($pages->find('projects')->children()->visible() as $project): ?>
       <div class="preview hidden" style="background-image: url(<?= $project->images()->first()->url(); ?>)" id="<?= $project->uid() ?>">
       </div>
     <?php endforeach ?>

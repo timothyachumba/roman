@@ -11,4 +11,4 @@ fields:
     type:  text
   info:
     label: Info
-    type:  text
+    type:  textarea
