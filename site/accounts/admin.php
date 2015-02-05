@@ -8,4 +8,4 @@ password: >
   $2a$10$2xcVjC1SNAfMTy2FLH0Z.eHYhLmElL8iwkJSqKOK4e.XVnp38lrOq
 language: en
 role: admin
-token: ac923c6232acb80a61890e91d0b2afc0c344facc
+token: d858ef78f4dffc44c9ea0db86fa94e08640e73ca
