@@ -16,6 +16,7 @@
     <?php $count = 0; ?>
     <?php foreach($pages->find('projects')->children()->visible() as $project): ?>
       <?php $count++; ?>
+      <?php if (strlen($project->info()) > 0): ?>
       <div class="project inner panel panel-<?php echo $count; ?>">
         <a class="close"></a>
         <a class="panel-link" href="#">Info</a>
@@ -25,6 +26,7 @@
           </div>
         </div>
       </div>
+      <?php endif ?>
     <?php endforeach ?>
     <div class="project panel about">
       <a class="panel-link" href="#">A<span class="justMobile">bout</span></a>

@@ -1,3 +1,4 @@
+<?php if (strlen($page->info()) != 0): ?>
 <div class="panel-container">
   <div class="about panel">
     <a class="panel-link" href="#"><?php echo $title ?></a>
@@ -10,3 +11,4 @@
     </div>
   </div>
 </div>
+<?php endif ?>
