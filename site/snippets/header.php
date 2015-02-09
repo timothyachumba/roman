@@ -10,6 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
+  <link href="http://webfonts.radimpesko.com/RP-W-54d3df45934c2b77e7000005.css" rel="stylesheet" type="text/css">
 
   <?php echo css(array(
     'css/plugins/scalablelightbox.css',
