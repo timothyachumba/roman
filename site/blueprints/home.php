@@ -2,7 +2,7 @@
 
 # home blueprint
 
-title: Page
+title: Home
 pages: true
 files: true
 fields:

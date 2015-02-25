@@ -2,7 +2,7 @@
 
 # projects blueprint
 
-title: Page
+title: Projects
 pages: true
 files: true
 fields:

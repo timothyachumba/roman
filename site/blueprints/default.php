@@ -2,14 +2,14 @@
 
 # default blueprint
 
-title: Page
+title: Default
 pages: true
 files: true
 fields:
-  title: 
+  title:
     label: Title
     type:  text
-  text: 
+  text:
     label: Text
     type:  textarea
     size:  large
