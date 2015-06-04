@@ -36,7 +36,7 @@
   width: 100%;
   height: 100%;
   z-index: 1100;
-  cursor: url('cursors/black/cursor-close.png'), url('cursors/black/cursor-close.cur'), crosshair;
+  cursor: url('cursors/black/cursor-close.svg'), url('cursors/black/cursor-close.cur'), crosshair;
   display: none;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -191,7 +191,7 @@
   width: 100%;
   height: 100%;
   z-index: 1100;
-  cursor: url('cursors/black/cursor-close.png'), url('cursors/black/cursor-close.cur'), crosshair;
+  cursor: url('cursors/black/cursor-close.svg'), url('cursors/black/cursor-close.cur'), crosshair;
   display: none;
 }
 
@@ -360,7 +360,7 @@
   left: 0;
   width: 50%;
   height: 100%;
-  cursor: url('cursors/black/cursor-left.png'), url('cursors/black/cursor-left.cur'), w-resize;
+  cursor: url('cursors/black/cursor-lefft.png'), url('cursors/black/cursor-lefft.cur'), w-resize;
 }
 
 .sl-lightbox-cursor.right {
@@ -389,14 +389,14 @@
 
   .sl-index-wrapper,
   .sl-lightbox-wrapper {
-    cursor: url('cursors/black/cursor-close-retina.png'), crosshair;
+    cursor: url('cursors/black/cursor-close.png'), crosshair;
   }
 
   .sl-lightbox-cursor.left {
-    cursor: url('cursors/black/cursor-left-retina.png'), w-resize;
+    cursor: url('cursors/black/cursor-left.png'), w-resize;
   }
   .sl-lightbox-cursor.right {
-    cursor: url('cursors/black/cursor-right-retina.png'), e-resize;
+    cursor: url('cursors/black/cursor-right.png'), e-resize;
   }
 
 }
