@@ -13,6 +13,7 @@ class CheckboxField extends InputField {
       'autofocus'    => $this->autofocus(),
       'autocomplete' => $this->autocomplete(),
       'readonly'     => $this->readonly(),
+      'disabled'     => $this->readonly() || $this->disabled(),
       'type'         => 'checkbox',
       'checked'      => v::accepted($this->value()),
     ));
@@ -29,15 +30,18 @@ class CheckboxField extends InputField {
 
   }
 
+  public function value() {
+    $value = parent::value();
+    return empty($value) ? '0' : $value;
+  }
+
   public function result() {
-
     $result = parent::result();
-    return v::accepted($result) ? true : false;
-
+    return v::accepted($result) ? '1' : '0';
   }
 
   public function validate() {
-    return v::accepted($this->value());
+    return v::accepted($this->value()) or v::denied($this->value());
   }
 
 }

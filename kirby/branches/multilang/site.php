@@ -25,7 +25,7 @@ class Site extends SiteAbstract {
       $language = new Language($this, $lang);
 
       // store the default language
-      if($language->default) $this->defaultLanguage = $language;
+      if($language->default) $this->defaultLanguage = $this->language = $language;
 
       // add the language to the collection
       $this->languages->data[$language->code] = $language;
@@ -55,7 +55,7 @@ class Site extends SiteAbstract {
       // return the specific language url
       return $this->languages->find($lang)->url();
     } else {
-      return $this->kirby->urls()->index();
+      return parent::url();
     }
   }
 
@@ -79,11 +79,14 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the current language
+   * or any other language by language code
    *
+   * @param string $code
    * @return Language
    */
-  public function language() {
-    return $this->language;
+  public function language($code = null) {
+    if(is_null($code)) return $this->language;
+    return $this->languages()->find($code);
   }
 
   /**
@@ -93,6 +96,54 @@ class Site extends SiteAbstract {
    */
   public function defaultLanguage() {
     return $this->defaultLanguage;
+  }
+
+  /**
+   * Tries to find the language for the current visitor 
+   * 
+   * @return Language
+   */
+  public function visitorLanguage() {
+    return $this->languages()->find(visitor::acceptedLanguageCode());
+  }
+
+  /**
+   * Returns the detected language
+   * 
+   * @return Language
+   */
+  public function detectedLanguage() {
+
+    if($language = $this->visitorLanguage()) {
+      return $language;
+    } else {
+      return $this->defaultLanguage();
+    }
+
+  }
+
+  /**
+   * Returns the language which will be 
+   * remembered for the next visit
+   * 
+   * @return Language
+   */
+  public function sessionLanguage() {
+    if($code = s::get('kirby_language') and $language = $this->languages()->find($code)) {
+      return $language;
+    } else {
+      return null;
+    }
+  }
+
+  public function switchLanguage(Language $language) {
+
+    s::set('kirby_language', $language->code());
+
+    if($this->language()->code() != $language->code()) {
+      go($this->page()->url($language->code()));
+    }
+
   }
 
   /**
@@ -115,13 +166,26 @@ class Site extends SiteAbstract {
     // clean the uri
     $uri = trim($uri, '/');
 
+    // alternate version without file extension
+    $baseUri = f::name($uri);
+    $parent  = dirname($uri);
+    if($parent !== '.') $baseUri = $parent . '/' . $baseUri;
+
     if(empty($uri)) {
       return $this->page = $this->homePage();
     } else {
-
       if($lang == $this->defaultLanguage->code and $page = $this->children()->find($uri)) {
         return $this->page = $page;
       } else if($page = $this->children()->findByURI($uri)) {
+        return $this->page = $page;
+      }
+
+      // store the representation for $page->representation()
+      if($uri !== $baseUri) $this->representation = f::extension($uri);
+
+      if($baseUri === '') {
+        return $this->page = $this->homePage();
+      } else if($page = $this->children()->findByURI($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();
@@ -137,6 +201,22 @@ class Site extends SiteAbstract {
    */
   public function locale() {
     return $this->language->locale;
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_merge(parent::__debuginfo(), [
+      'languages'        => $this->languages(),
+      'language'         => (string)$this->language(),
+      'defaultLanguage'  => (string)$this->defaultLanguage(),
+      'detectedLanguage' => (string)$this->detectedLanguage(),
+      'visitorLanguage'  => (string)$this->visitorLanguage(),
+      'sessionLanguage'  => (string)$this->sessionLanguage(),
+    ]);
   }
 
 }

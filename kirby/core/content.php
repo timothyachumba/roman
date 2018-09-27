@@ -20,6 +20,9 @@ abstract class ContentAbstract {
 
   /**
    * Constructor
+   * 
+   * @param Page $page
+   * @param string $root
    */
   public function __construct($page, $root) {
 
@@ -31,10 +34,10 @@ abstract class ContentAbstract {
     if(empty($this->root) or !is_file($this->root) or !is_readable($this->root)) return;
 
     // read the content file and remove the BOM
-    $this->raw = str_replace("\xEF\xBB\xBF", '', file_get_contents($this->root));
+    $this->raw = str_replace(BOM, '', file_get_contents($this->root));
 
     // explode all fields by the line separator
-    $fields = explode("\n----", $this->raw);
+    $fields = preg_split('!\n----\s*\n*!', $this->raw);
 
     // loop through all fields and add them to the content
     foreach($fields as $field) {
@@ -47,10 +50,8 @@ abstract class ContentAbstract {
       // add the key to the fields list
       $this->fields[] = $key;
 
-      $this->data[$key] = new Field;
-      $this->data[$key]->page  = $this->page;
-      $this->data[$key]->key   = $key;
-      $this->data[$key]->value = trim(substr($field, $pos+1));
+      // add the key object
+      $this->data[$key] = new Field($this->page, $key, trim(substr($field, $pos+1)));
     }
 
   }
@@ -117,29 +118,67 @@ abstract class ContentAbstract {
    * @return Field
    */
   public function get($key, $arguments = null) {
+  
+    // case-insensitive data fetching    
+    $key = strtolower($key);
+
     if(isset($this->data[$key])) {
       return $this->data[$key];
     } else {
-
-      // return an empty field on demand
-      $field        = new Field();
-      $field->key   = $key;
-      $field->page  = $this->page;
-      $field->value = '';
-
-      return $this->data[$key] = $field;
-
+      // return an empty field as default
+      return new Field($this->page, $key);
     }
+
   }
 
+  /**
+   * Checks if a field exists
+   * 
+   * @param string $key
+   * @return boolean
+   */
+  public function has($key) {
+    return isset($this->data[strtolower($key)]);
+  }
+
+  /**
+   * Magic getter
+   * 
+   * @param string $method
+   * @param array $arguments Not used
+   * @return Field
+   */
   public function __call($method, $arguments = null) {
     return $this->get($method, $arguments);
   }
 
+  /**
+   * Returns all fields as plain array
+   * 
+   * @return array
+   */
   public function toArray() {
     return array_map(function($item) {
       return $item->value;
     }, $this->data);
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return [
+      'root'   => $this->root(),
+      'fields' => $this->toArray(),
+    ];
+  }
+
+  public function __clone() {
+    foreach($this->data as $key => $value) {
+      $this->data[$key] = clone $value;
+    }
   }
 
 }

@@ -2,14 +2,11 @@
 
 class DateField extends InputField {
 
+  public $override = false;
+
   static public $assets = array(
     'js' => array(
-      'moment.min.js',
-      'pikaday.min.js',
-      'date.min.js'
-    ),
-    'css' => array(
-      'pikaday.css'
+      'date.js'
     )
   );
 
@@ -22,28 +19,45 @@ class DateField extends InputField {
 
   }
 
+  public function format() {
+    $format = str::upper($this->format);
+    return empty($format) ? 'YYYY-MM-DD' : $format;
+  }
+
   public function validate() {
     return v::date($this->result());
   }
 
-  public function value() {
+  public function value() {    
+    if($this->override()) {
+      $this->value = $this->default();
+    }
     return !empty($this->value) ? date('Y-m-d', strtotime($this->value)) : null;
   }
 
   public function input() {
+
     $input = parent::input();
+    $input->removeAttr('name');
     $input->data(array(
       'field'  => 'date',
       'format' => $this->format(),
-      'i18n'   => html(json_encode(array(
+      'i18n'   => json_encode(array(
         'previousMonth' => '&lsaquo;',
         'nextMonth'     => '&rsaquo;',
         'months'        => l::get('fields.date.months'),
         'weekdays'      => l::get('fields.date.weekdays'),
         'weekdaysShort' => l::get('fields.date.weekdays.short')
-      )), false)
+      ))
     ));
-    return $input;
+
+    $hidden = new Brick('input', null);
+    $hidden->type  = 'hidden';
+    $hidden->name  = $this->name();
+    $hidden->value = $this->value();
+
+    return $input . $hidden;
+
   }
 
 }

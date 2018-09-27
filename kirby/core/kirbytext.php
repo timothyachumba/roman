@@ -17,16 +17,16 @@ abstract class KirbytextAbstract {
 
   public $field;
 
-  public function __construct($field) {
+  public function __construct($field, $page = null) {
 
-    if(empty($field) or is_string($field)) {
-      $value = $field;
-      $field = new Field();
-      $field->value = $value;
-      $field->page  = page();
+    if(is_a($field, 'Field')) {
+      $this->field = $field;
+    } else if(is_array($field)) {
+      throw new Exception('Kirbytext cannot handle arrays');
+    } else if(empty($field) or is_string($field)) {
+      if(!$page) $page = page();
+      $this->field = new Field($page, null, $field);
     }
-
-    $this->field = $field;
 
   }
 
@@ -45,16 +45,14 @@ abstract class KirbytextAbstract {
       $text = call_user_func_array($filter, array($this, $text));
     }
 
-    // tags
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!i', array($this, 'tag'), $text);
+    // tagsify
+    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_-]+:.*?\)!is', array($this, 'tag'), $text);
 
     // markdownify
-    $text = markdown($text);
+    $text = kirby::instance()->component('markdown')->parse($text, $this->field);
 
-    // smartypants
-    if(kirby()->option('smartypants')) {
-      $text = smartypants($text);
-    }
+    // smartypantsify
+    $text = kirby::instance()->component('smartypants')->parse($text, false, $this->field);
 
     // post filters
     foreach(static::$post as $filter) {
@@ -74,9 +72,13 @@ abstract class KirbytextAbstract {
     // if the tag is not installed return the entire string
     if(!isset(static::$tags[$name])) return $input[0];
 
-    $tag = new Kirbytag($this, $name, $tag);
-
-    return $tag->html();
+    try {
+      $tag = new Kirbytag($this, $name, $tag);
+      return $tag->html();
+    } catch(Exception $e) {
+      // broken tags will be ignored
+      return $input[0];
+    }
 
   }
 
@@ -95,7 +97,12 @@ abstract class KirbytextAbstract {
   }
 
   public function __toString() {
-    return $this->parse();
+    try {
+      return $this->parse();
+    } catch(Exception $e) {
+      // on massive render bugs the entire text will be returned
+      return $this->field->value;
+    }
   }
 
 }
